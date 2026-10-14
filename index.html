@@ -43,8 +43,13 @@
 
     #app { min-height: 100%; display: flex; flex-direction: column; }
     .hidden { display: none !important; }
-
     .serif { font-family: "Noto Serif SC", "Songti SC", "STSong", Georgia, serif; }
+
+    /* Busy progress bar */
+    .busy-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 500; overflow: hidden; opacity: 0; transition: opacity 0.25s; pointer-events: none; }
+    .busy-bar.active { opacity: 1; }
+    .busy-bar::after { content: ''; display: block; height: 100%; width: 40%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-light)); animation: busySlide 1s ease-in-out infinite; }
+    @keyframes busySlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
 
     /* Icons */
     .icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
@@ -62,18 +67,17 @@
 
     /* Buttons */
     .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       border: none; border-radius: 16px; font-size: 15px; font-weight: 600;
       cursor: pointer; transition: var(--transition); padding: 14px 24px;
+      white-space: nowrap; user-select: none;
     }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      color: white; box-shadow: 0 6px 18px rgba(31, 61, 50, 0.22);
-    }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(31, 61, 50, 0.28); }
-    .btn-primary:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; box-shadow: 0 6px 18px rgba(31, 61, 50, 0.22); }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(31, 61, 50, 0.28); }
+    .btn-primary:active:not(:disabled) { transform: translateY(0); }
     .btn-secondary { background: var(--surface); color: var(--primary); border: 1.5px solid var(--border); }
-    .btn-secondary:hover { border-color: var(--accent); background: rgba(184, 155, 114, 0.04); }
+    .btn-secondary:hover:not(:disabled) { border-color: var(--accent); background: rgba(184, 155, 114, 0.04); }
     .btn-ghost { background: transparent; color: var(--text-secondary); padding: 10px 14px; }
     .btn-ghost:hover { color: var(--primary); background: rgba(31, 61, 50, 0.04); }
     .btn-block { width: 100%; }
@@ -81,36 +85,18 @@
     .btn-xs { padding: 6px 10px; font-size: 12px; border-radius: 8px; }
 
     /* Cards */
-    .card {
-      background: var(--surface); border-radius: var(--radius); padding: 24px;
-      box-shadow: var(--shadow); border: 1px solid var(--border);
-      transition: var(--transition);
-    }
+    .card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); transition: var(--transition); }
     .card-hover:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 
     /* Header */
-    .header {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(245, 242, 238, 0.88);
-      backdrop-filter: blur(16px); border-bottom: 1px solid rgba(234, 230, 225, 0.8);
-    }
-    .header-content {
-      max-width: 840px; margin: 0 auto; padding: 16px 20px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
+    .header { position: sticky; top: 0; z-index: 100; background: rgba(245, 242, 238, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(234, 230, 225, 0.8); }
+    .header-content { max-width: 840px; margin: 0 auto; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
     .logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--primary); }
-    .logo-mark {
-      width: 34px; height: 34px; border-radius: 10px; background: var(--primary);
-      display: flex; align-items: center; justify-content: center; color: var(--accent);
-      box-shadow: 0 4px 10px rgba(31, 61, 50, 0.18);
-    }
+    .logo-mark { width: 34px; height: 34px; border-radius: 10px; background: var(--primary); display: flex; align-items: center; justify-content: center; color: var(--accent); box-shadow: 0 4px 10px rgba(31, 61, 50, 0.18); }
     .header-actions { display: flex; gap: 10px; align-items: center; }
-    .icon-btn {
-      width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border);
-      background: var(--surface); color: var(--primary); display: flex; align-items: center;
-      justify-content: center; cursor: pointer; transition: var(--transition);
-    }
+    .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); flex-shrink: 0; }
     .icon-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    .icon-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* Main */
     .main { flex: 1; max-width: 840px; width: 100%; margin: 0 auto; padding: 24px 20px 120px; }
@@ -118,11 +104,7 @@
     /* Forms */
     .form-group { margin-bottom: 20px; }
     label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
-    input, textarea, select {
-      width: 100%; padding: 14px 16px; border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); font-size: 15px; background: var(--surface); color: var(--text);
-      transition: var(--transition); font-family: inherit;
-    }
+    input, textarea, select { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; background: var(--surface); color: var(--text); transition: var(--transition); font-family: inherit; }
     input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31, 61, 50, 0.06); }
     textarea { min-height: 100px; resize: vertical; line-height: 1.7; }
     .help-text { font-size: 13px; color: var(--text-tertiary); margin-top: 6px; }
@@ -131,30 +113,14 @@
     .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .login-card { width: 100%; max-width: 440px; }
     .login-header { text-align: center; margin-bottom: 36px; }
-    .login-mark {
-      width: 72px; height: 72px; border-radius: 22px; background: var(--primary);
-      display: flex; align-items: center; justify-content: center; margin: 0 auto 22px;
-      color: var(--accent); box-shadow: var(--shadow-lg);
-    }
+    .login-mark { width: 72px; height: 72px; border-radius: 22px; background: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; color: var(--accent); box-shadow: var(--shadow-lg); }
     .login-title { font-size: 30px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
-    .login-title .serif { font-weight: 700; }
     .login-sub { color: var(--text-secondary); font-size: 15px; }
 
     /* Home */
-    .hero {
-      background: linear-gradient(135deg, var(--primary) 0%, #153025 100%);
-      border-radius: var(--radius-lg); padding: 36px; color: white;
-      margin-bottom: 28px; position: relative; overflow: hidden;
-      box-shadow: var(--shadow-lg);
-    }
-    .hero::before {
-      content: ''; position: absolute; top: -40%; right: -15%; width: 340px; height: 340px;
-      background: radial-gradient(circle, rgba(184, 155, 114, 0.22) 0%, transparent 65%);
-    }
-    .hero::after {
-      content: ''; position: absolute; bottom: -30%; left: -10%; width: 260px; height: 260px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
-    }
+    .hero { background: linear-gradient(135deg, var(--primary) 0%, #153025 100%); border-radius: var(--radius-lg); padding: 36px; color: white; margin-bottom: 28px; position: relative; overflow: hidden; box-shadow: var(--shadow-lg); }
+    .hero::before { content: ''; position: absolute; top: -40%; right: -15%; width: 340px; height: 340px; background: radial-gradient(circle, rgba(184, 155, 114, 0.22) 0%, transparent 65%); }
+    .hero::after { content: ''; position: absolute; bottom: -30%; left: -10%; width: 260px; height: 260px; background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 60%); }
     .hero-content { position: relative; z-index: 1; }
     .hero-greeting { font-size: 13px; opacity: 0.75; margin-bottom: 6px; letter-spacing: 0.06em; }
     .hero-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
@@ -169,49 +135,30 @@
     .section-title { font-size: 18px; font-weight: 700; color: var(--primary); }
     .section-line { width: 4px; height: 20px; border-radius: 2px; background: var(--accent); }
 
-    .quick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 32px; }
-    .quick-card {
-      background: var(--surface); border-radius: var(--radius); padding: 22px 18px;
-      border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer;
-      transition: var(--transition); text-align: left;
-    }
+    .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+    .quick-card { background: var(--surface); border-radius: var(--radius); padding: 18px 14px; border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); text-align: left; }
     .quick-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--accent-light); }
     .quick-card:active { transform: translateY(0); }
-    .quick-icon {
-      width: 46px; height: 46px; border-radius: 14px; background: var(--surface-2);
-      display: flex; align-items: center; justify-content: center; color: var(--primary); margin-bottom: 14px;
-      transition: var(--transition);
-    }
+    .quick-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; color: var(--primary); margin-bottom: 12px; transition: var(--transition); }
     .quick-card:hover .quick-icon { background: var(--primary); color: white; }
-    .quick-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .quick-title { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
     .quick-desc { font-size: 12px; color: var(--text-tertiary); }
 
-    /* Dishes */
-    .search-box { position: relative; margin-bottom: 22px; }
+    /* Dishes - horizontal list */
+    .search-box { position: relative; margin-bottom: 18px; }
     .search-box .icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); }
     .search-box input { padding-left: 46px; }
-    .dish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 18px; }
-    .dish-card {
-      background: var(--surface); border-radius: var(--radius); overflow: hidden;
-      border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer;
-      transition: var(--transition);
-    }
-    .dish-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-    .dish-img-wrap { position: relative; aspect-ratio: 4/3; background: linear-gradient(135deg, #f0ede9 0%, #e8e4de 100%); overflow: hidden; }
-    .dish-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-    .dish-card:hover .dish-img { transform: scale(1.05); }
-    .dish-img-placeholder {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      color: var(--text-tertiary);
-    }
-    .dish-info { padding: 16px; }
-    .dish-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-    .dish-meta { font-size: 12px; color: var(--text-tertiary); }
-    .dish-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-    .dish-tag {
-      font-size: 11px; font-weight: 500; color: var(--primary); background: rgba(31, 61, 50, 0.06);
-      padding: 4px 8px; border-radius: 6px;
-    }
+    .dish-row { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 12px 14px; margin-bottom: 12px; box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); }
+    .dish-row:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .dish-thumb { flex-shrink: 0; width: 84px; height: 84px; border-radius: 14px; overflow: hidden; background: linear-gradient(135deg, #f0ede9 0%, #e8e4de 100%); position: relative; }
+    .dish-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .dish-thumb .dish-img-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); }
+    .dish-row-main { flex: 1; min-width: 0; }
+    .dish-name { font-size: 16px; font-weight: 600; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dish-meta { font-size: 12px; color: var(--text-tertiary); margin-bottom: 6px; }
+    .dish-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .dish-tag { font-size: 11px; font-weight: 500; color: var(--primary); background: rgba(31, 61, 50, 0.06); padding: 3px 8px; border-radius: 6px; }
+    .dish-add-btn { flex-shrink: 0; padding: 10px 14px; font-size: 13px; line-height: 1.3; flex-direction: column; gap: 2px; }
     .empty-state { text-align: center; padding: 70px 20px; color: var(--text-tertiary); }
     .empty-icon { width: 64px; height: 64px; margin: 0 auto 16px; color: var(--border); }
 
@@ -221,88 +168,66 @@
     .detail-img-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); }
     .detail-gallery { position: absolute; bottom: 12px; left: 12px; right: 12px; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
     .detail-gallery::-webkit-scrollbar { display: none; }
-    .detail-gallery img {
-      width: 56px; height: 56px; object-fit: cover; border-radius: 10px; border: 2px solid white;
-      cursor: pointer; opacity: 0.85; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
+    .detail-gallery img { width: 56px; height: 56px; object-fit: cover; border-radius: 10px; border: 2px solid white; cursor: pointer; opacity: 0.85; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     .detail-gallery img:hover, .detail-gallery img.active { opacity: 1; transform: scale(1.05); }
     .detail-header { margin-bottom: 22px; }
     .detail-title { font-size: 30px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
-    .detail-title .serif { font-weight: 700; }
     .detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-    .detail-tag {
-      display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary);
-      background: var(--surface); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px;
-    }
+    .detail-tag { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; }
+    .kcal-tag { color: #B45A2D; border-color: rgba(180, 90, 45, 0.25); background: rgba(180, 90, 45, 0.05); font-weight: 600; }
 
     .info-card { margin-bottom: 16px; }
     .info-card-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
     .info-card-title .line { flex: 1; height: 1px; background: var(--border); }
-    .ingredient-item {
-      display: flex; align-items: center; gap: 12px; padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .ingredient-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
     .ingredient-item:last-child { border-bottom: none; }
-    .ingredient-item input[type="checkbox"] {
-      width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer;
-    }
+    .ingredient-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; }
     .ingredient-item span { font-size: 15px; color: var(--text); }
     .ingredient-item.checked span { text-decoration: line-through; color: var(--text-tertiary); }
     .step-item { display: flex; gap: 16px; margin-bottom: 18px; }
-    .step-num {
-      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
-      background: var(--primary); color: white; display: flex; align-items: center;
-      justify-content: center; font-size: 13px; font-weight: 700;
-    }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
     .step-text { flex: 1; padding-top: 5px; font-size: 15px; color: var(--text); line-height: 1.7; }
-    .detail-actions { display: flex; gap: 12px; margin-top: 28px; }
-
-    /* Picker */
-    .picker-wrap { text-align: center; padding: 20px 0; }
-    .picker-circle {
-      width: 280px; height: 280px; margin: 0 auto 36px; border-radius: 50%;
-      background: conic-gradient(from 180deg, var(--primary) 0%, var(--primary-light) 35%, var(--accent) 65%, var(--primary) 100%);
-      display: flex; align-items: center; justify-content: center; color: white;
-      box-shadow: var(--shadow-lg); position: relative;
-    }
-    .picker-circle::before {
-      content: ''; position: absolute; inset: 14px; border-radius: 50%;
-      background: linear-gradient(145deg, var(--primary) 0%, #153025 100%);
-    }
-    .picker-content { position: relative; z-index: 1; padding: 0 30px; }
-    .picker-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65; margin-bottom: 10px; }
-    .picker-dish { font-size: 32px; font-weight: 700; line-height: 1.25; }
-    .picker-emoji { font-size: 44px; margin-bottom: 12px; }
-    .picker-result { min-height: 100px; margin-top: 28px; }
+    .detail-actions { display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap; }
 
     /* Menu */
+    .menu-date-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .menu-date-label { flex: 1; text-align: center; font-size: 16px; font-weight: 700; color: var(--primary); }
+    .menu-toolbar { display: flex; gap: 10px; margin-bottom: 20px; }
+    .menu-toolbar .btn { flex: 1; }
     .meal-card { margin-bottom: 16px; }
-    .meal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .meal-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; color: var(--primary); }
-    .meal-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-    .meal-actions { display: flex; gap: 6px; }
+    .meal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; }
+    .meal-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; color: var(--primary); min-width: 0; }
+    .meal-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .meal-actions { display: flex; gap: 6px; flex-shrink: 0; }
     .menu-items { display: flex; flex-wrap: wrap; gap: 8px; }
-    .menu-chip {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px;
-      padding: 8px 12px; font-size: 14px; color: var(--text);
-    }
-    .menu-chip button {
-      width: 18px; height: 18px; border-radius: 50%; border: none; background: transparent;
-      color: var(--text-tertiary); cursor: pointer; display: flex; align-items: center; justify-content: center;
-      padding: 0; transition: var(--transition);
-    }
+    .menu-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px; padding: 8px 12px; font-size: 14px; color: var(--text); }
+    .menu-chip button { width: 18px; height: 18px; border-radius: 50%; border: none; background: transparent; color: var(--text-tertiary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: var(--transition); }
     .menu-chip button:hover { background: var(--border); color: var(--text); }
     .menu-chip svg { width: 12px; height: 12px; }
+
+    /* Calories result */
+    .kcal-total { text-align: center; padding: 8px 0 18px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+    .kcal-total-num { font-size: 38px; font-weight: 700; color: #B45A2D; }
+    .kcal-meal { margin-bottom: 14px; }
+    .kcal-meal-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .kcal-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--text-secondary); padding: 3px 0; }
+    .kcal-sub { text-align: right; font-size: 13px; font-weight: 600; color: var(--text); padding-top: 4px; }
+
+    /* Dish picker in add-item modal */
+    .picker-search { margin-bottom: 12px; }
+    .picker-list { max-height: 260px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .picker-chip { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 20px; padding: 8px 14px; font-size: 14px; cursor: pointer; transition: var(--transition); }
+    .picker-chip:hover { border-color: var(--primary); background: rgba(31, 61, 50, 0.05); }
+    .picker-divider { display: flex; align-items: center; gap: 10px; color: var(--text-tertiary); font-size: 12px; margin: 4px 0 14px; }
+    .picker-divider::before, .picker-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .manual-add-row { display: flex; gap: 10px; }
+    .manual-add-row input { flex: 1; }
 
     /* Vote */
     .vote-card { margin-bottom: 16px; }
     .vote-header { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--primary); }
     .vote-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .vote-option {
-      background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-      padding: 18px; text-align: center; cursor: pointer; transition: var(--transition);
-    }
+    .vote-option { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 18px; text-align: center; cursor: pointer; transition: var(--transition); }
     .vote-option:hover { border-color: var(--accent); background: rgba(184, 155, 114, 0.04); }
     .vote-option-name { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
     .vote-option-count { font-size: 12px; color: var(--text-tertiary); }
@@ -310,21 +235,15 @@
     .vote-bar { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%); transition: width 0.4s ease; }
 
     /* Modal */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(31, 41, 55, 0.35);
-      backdrop-filter: blur(6px); z-index: 200; display: flex;
-      align-items: center; justify-content: center; padding: 20px;
-    }
-    .modal {
-      background: var(--surface); width: 100%; max-width: 560px; max-height: 90vh;
-      border-radius: var(--radius-lg); padding: 28px; overflow-y: auto;
-      box-shadow: var(--shadow-lg); animation: fadeScale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(31, 41, 55, 0.35); backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal { background: var(--surface); width: 100%; max-width: 560px; max-height: 90vh; border-radius: var(--radius-lg); padding: 28px; overflow-y: auto; box-shadow: var(--shadow-lg); animation: fadeScale 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
     @keyframes fadeScale { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .modal-title { font-size: 20px; font-weight: 700; color: var(--primary); }
     .close-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .close-btn:hover { background: var(--bg); }
+    .label-with-action { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .label-with-action label { margin-bottom: 0; }
 
     /* Image upload */
     .image-upload { border: 2px dashed var(--border); border-radius: var(--radius-sm); padding: 18px; text-align: center; transition: var(--transition); }
@@ -333,38 +252,20 @@
     .upload-trigger { color: var(--primary); font-weight: 600; cursor: pointer; }
     .upload-hint { font-size: 12px; color: var(--text-tertiary); margin-top: 6px; }
     .thumb-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-    .thumb {
-      position: relative; width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
-    }
+    .thumb { position: relative; width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
     .thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .thumb .remove {
-      position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%;
-      background: rgba(0,0,0,0.5); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;
-    }
+    .thumb .remove { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,0.5); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
     .thumb .remove svg { width: 12px; height: 12px; }
 
     /* Toast */
-    .toast {
-      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
-      background: var(--primary); color: white; padding: 12px 22px;
-      border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 300;
-      opacity: 0; transition: all 0.3s ease; pointer-events: none; box-shadow: var(--shadow-lg);
-    }
+    .toast { position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary); color: white; padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 300; opacity: 0; transition: all 0.3s ease; pointer-events: none; box-shadow: var(--shadow-lg); max-width: 86vw; text-align: center; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: #A4442E; }
 
     /* Bottom Nav */
-    .bottom-nav {
-      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 100;
-      background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px);
-      border: 1px solid rgba(234, 230, 225, 0.9); border-radius: 28px;
-      padding: 8px 12px; box-shadow: var(--shadow-lg);
-    }
+    .bottom-nav { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 100; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px); border: 1px solid rgba(234, 230, 225, 0.9); border-radius: 28px; padding: 8px 12px; box-shadow: var(--shadow-lg); }
     .bottom-nav-content { display: flex; gap: 4px; }
-    .nav-item {
-      display: flex; flex-direction: column; align-items: center; gap: 3px;
-      padding: 8px 14px; cursor: pointer; color: var(--text-tertiary); transition: var(--transition);
-      border: none; background: transparent; font-family: inherit; font-size: 10px; font-weight: 600; border-radius: 18px;
-    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 18px; cursor: pointer; color: var(--text-tertiary); transition: var(--transition); border: none; background: transparent; font-family: inherit; font-size: 10px; font-weight: 600; border-radius: 18px; }
     .nav-item .icon { transition: var(--transition); }
     .nav-item.active { color: var(--primary); background: rgba(31, 61, 50, 0.06); }
     .nav-item.active .icon { stroke-width: 2.2; }
@@ -382,15 +283,17 @@
       .title-xl { font-size: 28px; }
       .hero { padding: 28px; }
       .hero-title { font-size: 24px; }
-      .dish-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-      .quick-grid { gap: 12px; }
-      .picker-circle { width: 240px; height: 240px; }
-      .picker-dish { font-size: 26px; }
+      .dish-thumb { width: 72px; height: 72px; }
+      .dish-add-btn { padding: 9px 12px; font-size: 12px; }
+      .quick-grid { gap: 10px; }
+      .quick-card { padding: 16px 12px; }
       .modal { padding: 22px; }
+      .hero-stats { gap: 22px; }
     }
   </style>
 </head>
 <body>
+  <div id="busy-bar" class="busy-bar"></div>
   <div id="app"></div>
 
   <script>
@@ -398,12 +301,14 @@
     const state = {
       token: localStorage.getItem('gh_token') || '',
       repo: localStorage.getItem('gh_repo') || 'zzkzzk/our-cookbook',
+      dsKey: localStorage.getItem('ds_key') || '',
       owner: '',
       repoName: '',
       dishes: [],
       menus: {},
       votes: [],
       currentView: 'home',
+      menuDate: todayKey(),
       loading: false,
       demo: false
     };
@@ -411,47 +316,26 @@
     const demoData = {
       dishes: [
         {
-          id: 'demo-1',
-          name: '红烧肉',
-          category: '荤菜',
-          time: '60 分钟',
-          tags: ['下饭', '经典'],
+          id: 'demo-1', name: '红烧肉', category: '荤菜', time: '60 分钟', tags: ['下饭', '经典'],
           ingredients: '五花肉 500g\n生姜 3片\n冰糖 20g\n生抽 2勺\n老抽 1勺\n料酒 2勺',
           steps: '五花肉切块，冷水下锅焯水去腥。\n热锅少油，放入冰糖小火炒出糖色。\n倒入五花肉翻炒上色。\n加入姜片、生抽、老抽、料酒和没过肉的热水。\n小火炖煮 45 分钟，最后大火收汁即可。',
-          image: '',
-          images: [],
-          checkedIngredients: [],
-          createdAt: Date.now()
+          image: '', images: [], calories: 520, checkedIngredients: [], createdAt: Date.now()
         },
         {
-          id: 'demo-2',
-          name: '番茄炒蛋',
-          category: '素菜',
-          time: '10 分钟',
-          tags: ['快手', '家常菜'],
+          id: 'demo-2', name: '番茄炒蛋', category: '素菜', time: '10 分钟', tags: ['快手', '家常菜'],
           ingredients: '番茄 2个\n鸡蛋 3个\n葱花 少许\n盐 适量\n糖 1小勺',
           steps: '番茄切块，鸡蛋打散备用。\n热锅热油，倒入蛋液炒散盛出。\n锅中再加少许油，放入番茄炒出汁。\n倒入鸡蛋，加盐和糖调味。\n撒上葱花，翻炒均匀出锅。',
-          image: '',
-          images: [],
-          checkedIngredients: [],
-          createdAt: Date.now()
+          image: '', images: [], calories: 210, checkedIngredients: [], createdAt: Date.now()
         },
         {
-          id: 'demo-3',
-          name: '可乐鸡翅',
-          category: '荤菜',
-          time: '30 分钟',
-          tags: ['甜口', '人气'],
+          id: 'demo-3', name: '可乐鸡翅', category: '荤菜', time: '30 分钟', tags: ['甜口', '人气'],
           ingredients: '鸡翅 8个\n可乐 1罐\n生抽 2勺\n老抽 半勺\n姜片 3片',
           steps: '鸡翅两面划刀，冷水加姜片焯水。\n沥干水分后煎至两面金黄。\n倒入可乐、生抽、老抽。\n中火焖煮 15 分钟。\n大火收汁，装盘撒芝麻。',
-          image: '',
-          images: [],
-          checkedIngredients: [],
-          createdAt: Date.now()
+          image: '', images: [], calories: 380, checkedIngredients: [], createdAt: Date.now()
         }
       ],
       menus: {
-        [(() => new Date().toISOString().slice(0, 10))()]: [
+        [(() => todayKey())()]: [
           { id: 'demo-m1', name: '早餐', items: ['豆浆', '油条'] },
           { id: 'demo-m2', name: '午餐', items: ['番茄炒蛋', '米饭'] },
           { id: 'demo-m3', name: '晚餐', items: ['红烧肉'] }
@@ -464,7 +348,6 @@
     const icons = {
       home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
       book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
-      dice: '<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="8" cy="8" r="1.5"/><circle cx="16" cy="8" r="1.5"/><circle cx="8" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/><circle cx="12" cy="12" r="1.5"/>',
       menu: '<path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/>',
       vote: '<path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M9 12l2 2 4-4"/>',
       plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
@@ -480,129 +363,46 @@
       check: '<polyline points="20 6 9 17 4 12"/>',
       utensils: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 2v20"/><path d="M17 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2"/>',
       close: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
-      camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>'
+      camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+      flame: '<path d="M12 22c4.4 0 7-2.8 7-6.5 0-2.6-1.4-4.9-3-6.5-.3 1.1-1 2-2 2.5C14 8 13 4.5 9.5 2c.3 2.5-.5 4.5-2 6C6 9.5 5 11.4 5 13.5 5 19.2 7.6 22 12 22z"/>',
+      chevronLeft: '<polyline points="15 18 9 12 15 6"/>',
+      chevronRight: '<polyline points="9 18 15 12 9 6"/>',
+      sparkles: '<path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3L12 3z"/>'
     };
 
     function icon(name, cls = '') {
       return `<svg class="icon ${cls}" viewBox="0 0 24 24" aria-hidden="true">${icons[name] || ''}</svg>`;
     }
 
-    // ================== GitHub API ==================
-    function parseRepo() {
-      const parts = state.repo.split('/');
-      state.owner = parts[0] || '';
-      state.repoName = parts.slice(1).join('/') || '';
-    }
-
-    async function ghApi(path, options = {}) {
-      const url = `https://api.github.com${path}`;
-      const res = await fetch(url, {
-        headers: {
-          'Authorization': `token ${state.token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        ...options
-      });
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => ({}));
-        const err = new Error(errBody.message || `HTTP ${res.status}`);
-        err.status = res.status;
-        throw err;
-      }
-      return res.status === 204 ? null : await res.json();
-    }
-
-    async function getFile(path) {
-      try {
-        const data = await ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`);
-        return { content: JSON.parse(decodeURIComponent(escape(atob(data.content)))), sha: data.sha };
-      } catch (e) {
-        if (e.status === 404 || e.message.includes('404')) return { content: null, sha: null };
-        throw e;
-      }
-    }
-
-    async function saveFile(path, content, sha) {
-      const body = {
-        message: `update ${path}`,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))))
-      };
-      if (sha) body.sha = sha;
-      return ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`, {
-        method: 'PUT',
-        body: JSON.stringify(body)
-      });
-    }
-
-    async function loadData() {
-      parseRepo();
-      showLoading(true);
-      try {
-        const dishes = await getFile('data/dishes.json');
-        if (dishes.content === null) {
-          await saveFile('data/dishes.json', []);
-          state.dishes = [];
-        } else {
-          state.dishes = dishes.content;
-        }
-        const menus = await getFile('data/menus.json');
-        if (menus.content === null) {
-          await saveFile('data/menus.json', {});
-        } else {
-          state.menus = menus.content;
-        }
-        const votes = await getFile('data/votes.json');
-        if (votes.content === null) {
-          await saveFile('data/votes.json', []);
-        } else {
-          state.votes = votes.content;
-        }
-        renderApp();
-        toast('数据加载成功');
-      } catch (e) {
-        alert('加载失败：' + e.message + '\n请检查 Token 和仓库名是否正确。');
-        state.token = '';
-        state.repo = '';
-        localStorage.removeItem('gh_token');
-        localStorage.removeItem('gh_repo');
-        renderApp();
-      } finally {
-        showLoading(false);
-      }
-    }
-
-    async function saveDishes() {
-      if (state.demo) return;
-      const { sha } = await getFile('data/dishes.json');
-      await saveFile('data/dishes.json', state.dishes, sha);
-    }
-    async function saveMenus() {
-      if (state.demo) return;
-      const { sha } = await getFile('data/menus.json');
-      await saveFile('data/menus.json', state.menus, sha);
-    }
-    async function saveVotes() {
-      if (state.demo) return;
-      const { sha } = await getFile('data/votes.json');
-      await saveFile('data/votes.json', state.votes, sha);
-    }
-
-    // ================== UI Helpers ==================
+    // ================== Helpers ==================
     function $(sel) { return document.querySelector(sel); }
-    function esc(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
-    function toast(msg) {
+    function esc(str) { const div = document.createElement('div'); div.textContent = str == null ? '' : String(str); return div.innerHTML; }
+    function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
+    function pad2(n) { return String(n).padStart(2, '0'); }
+    function todayKey() { const d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+    function parseDateKey(key) { const p = key.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+    function dateWithOffset(key, offset) { const d = parseDateKey(key); d.setDate(d.getDate() + offset); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+    function dateLabel(key) { const w = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']; return key + ' ' + w[parseDateKey(key).getDay()]; }
+    function dayName() { const d = new Date(); return (d.getMonth() + 1) + '月' + d.getDate() + '日'; }
+    function greeting() { const h = new Date().getHours(); return h < 11 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'; }
+    function dishImage(d) { return (d.images && d.images[0]) || d.image || ''; }
+
+    function toast(msg, type) {
       const t = document.createElement('div');
-      t.className = 'toast';
+      t.className = 'toast' + (type === 'error' ? ' error' : '');
       t.textContent = msg;
       document.body.appendChild(t);
       requestAnimationFrame(() => t.classList.add('show'));
-      setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 2200);
+      setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, type === 'error' ? 3200 : 2400);
     }
+
+    let busyCount = 0;
+    function setBusy(on) {
+      busyCount = Math.max(0, busyCount + (on ? 1 : -1));
+      const bar = document.getElementById('busy-bar');
+      if (bar) bar.classList.toggle('active', busyCount > 0);
+    }
+
     function showLoading(show) {
       state.loading = show;
       const app = $('#app');
@@ -610,14 +410,9 @@
         app.innerHTML = '<div class="loading"><div class="spinner"></div><p>正在连接小厨房...</p></div>';
       }
     }
-    function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
-    function todayKey() { return new Date().toISOString().slice(0, 10); }
-    function greeting() {
-      const h = new Date().getHours();
-      if (h < 11) return 'Good morning';
-      if (h < 17) return 'Good afternoon';
-      return 'Good evening';
-    }
+
+    function getCalCache() { try { return JSON.parse(localStorage.getItem('cal_cache') || '{}'); } catch (e) { return {}; } }
+    function setCalCache(c) { localStorage.setItem('cal_cache', JSON.stringify(c)); }
 
     function openPrompt({ title, message, defaultValue = '', placeholder = '', onConfirm }) {
       const modal = $('#modal');
@@ -648,6 +443,136 @@
       };
     }
 
+    // ================== GitHub API ==================
+    function parseRepo() {
+      const parts = state.repo.split('/');
+      state.owner = parts[0] || '';
+      state.repoName = parts.slice(1).join('/') || '';
+    }
+
+    async function ghApi(path, options = {}) {
+      setBusy(true);
+      try {
+        const url = `https://api.github.com${path}`;
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': `token ${state.token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          ...options
+        });
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          const err = new Error(errBody.message || `HTTP ${res.status}`);
+          err.status = res.status;
+          throw err;
+        }
+        return res.status === 204 ? null : await res.json();
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function getFile(path) {
+      try {
+        const data = await ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`);
+        return { content: JSON.parse(decodeURIComponent(escape(atob(data.content)))), sha: data.sha };
+      } catch (e) {
+        if (e.status === 404 || (e.message && e.message.includes('404'))) return { content: null, sha: null };
+        throw e;
+      }
+    }
+
+    async function saveFile(path, content, sha) {
+      const body = {
+        message: `update ${path}`,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))))
+      };
+      if (sha) body.sha = sha;
+      return ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`, {
+        method: 'PUT',
+        body: JSON.stringify(body)
+      });
+    }
+
+    async function loadData() {
+      parseRepo();
+      showLoading(true);
+      try {
+        const dishes = await getFile('data/dishes.json');
+        state.dishes = dishes.content === null ? [] : dishes.content;
+        const menus = await getFile('data/menus.json');
+        state.menus = menus.content === null ? {} : menus.content;
+        const votes = await getFile('data/votes.json');
+        state.votes = votes.content === null ? [] : votes.content;
+        if (dishes.content === null) await saveFile('data/dishes.json', []);
+        if (menus.content === null) await saveFile('data/menus.json', {});
+        if (votes.content === null) await saveFile('data/votes.json', []);
+        state.menuDate = todayKey();
+        renderApp();
+        toast('数据加载成功');
+      } catch (e) {
+        alert('加载失败：' + e.message + '\n请检查 Token 和仓库名是否正确。');
+        state.token = '';
+        state.repo = '';
+        localStorage.removeItem('gh_token');
+        localStorage.removeItem('gh_repo');
+        renderApp();
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function saveDishes() {
+      if (state.demo) return;
+      const { sha } = await getFile('data/dishes.json');
+      await saveFile('data/dishes.json', state.dishes, sha);
+    }
+    async function saveMenus() {
+      if (state.demo) return;
+      const { sha } = await getFile('data/menus.json');
+      await saveFile('data/menus.json', state.menus, sha);
+    }
+    async function saveVotes() {
+      if (state.demo) return;
+      const { sha } = await getFile('data/votes.json');
+      await saveFile('data/votes.json', state.votes, sha);
+    }
+
+    // ================== DeepSeek API ==================
+    async function dsChat(systemPrompt, userPrompt) {
+      if (!state.dsKey) throw new Error('请先在「设置」中填写 DeepSeek API Key');
+      setBusy(true);
+      try {
+        const res = await fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.dsKey },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            temperature: 0.2
+          })
+        });
+        if (!res.ok) {
+          const t = await res.text().catch(() => '');
+          throw new Error('DeepSeek 请求失败（' + res.status + '），请检查 API Key 是否有效');
+        }
+        const data = await res.json();
+        return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '').trim();
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function extractNumber(text) {
+      const m = String(text).replace(/,/g, '').match(/\d+(\.\d+)?/);
+      return m ? Math.round(parseFloat(m[0])) : null;
+    }
+
     // ================== Views ==================
     function renderApp() {
       if (!state.demo && (!state.token || !state.repo)) {
@@ -670,39 +595,21 @@
         <main class="main">
           <div id="view-home" class="view ${state.currentView === 'home' ? 'active' : ''}"></div>
           <div id="view-dishes" class="view ${state.currentView === 'dishes' ? 'active' : ''}"></div>
-          <div id="view-wheel" class="view ${state.currentView === 'wheel' ? 'active' : ''}"></div>
           <div id="view-menu" class="view ${state.currentView === 'menu' ? 'active' : ''}"></div>
           <div id="view-votes" class="view ${state.currentView === 'votes' ? 'active' : ''}"></div>
         </main>
         <nav class="bottom-nav">
           <div class="bottom-nav-content">
-            <button class="nav-item ${state.currentView === 'home' ? 'active' : ''}" onclick="nav('home')">
-              ${icon('home')}
-              <span>首页</span>
-            </button>
-            <button class="nav-item ${state.currentView === 'dishes' ? 'active' : ''}" onclick="nav('dishes')">
-              ${icon('book')}
-              <span>菜谱</span>
-            </button>
-            <button class="nav-item ${state.currentView === 'wheel' ? 'active' : ''}" onclick="nav('wheel')">
-              ${icon('dice')}
-              <span>抽签</span>
-            </button>
-            <button class="nav-item ${state.currentView === 'menu' ? 'active' : ''}" onclick="nav('menu')">
-              ${icon('menu')}
-              <span>菜单</span>
-            </button>
-            <button class="nav-item ${state.currentView === 'votes' ? 'active' : ''}" onclick="nav('votes')">
-              ${icon('vote')}
-              <span>投票</span>
-            </button>
+            <button class="nav-item ${state.currentView === 'home' ? 'active' : ''}" onclick="nav('home')">${icon('home')}<span>首页</span></button>
+            <button class="nav-item ${state.currentView === 'dishes' ? 'active' : ''}" onclick="nav('dishes')">${icon('book')}<span>菜谱</span></button>
+            <button class="nav-item ${state.currentView === 'menu' ? 'active' : ''}" onclick="nav('menu')">${icon('menu')}<span>菜单</span></button>
+            <button class="nav-item ${state.currentView === 'votes' ? 'active' : ''}" onclick="nav('votes')">${icon('vote')}<span>投票</span></button>
           </div>
         </nav>
         <div id="modal"></div>
       `;
       renderHome();
       renderDishes();
-      renderWheel();
       renderMenu();
       renderVotes();
     }
@@ -725,6 +632,10 @@
               <label>仓库名</label>
               <input type="text" id="repo" placeholder="用户名/仓库名" value="${esc(state.repo || 'zzkzzk/our-cookbook')}">
             </div>
+            <div class="form-group">
+              <label>DeepSeek API Key（可选，用于 AI 整理菜谱和热量分析）</label>
+              <input type="password" id="dskey" placeholder="sk-xxxxxxxxxxxx" value="${esc(state.dsKey)}">
+            </div>
             <button class="btn btn-primary btn-block" onclick="doLogin()">进入小厨房</button>
             <button class="btn btn-secondary btn-block" style="margin-top: 12px;" onclick="startDemo()">本地试用</button>
             <p class="help-text" style="text-align: center; margin-top: 20px;">
@@ -738,9 +649,11 @@
     function doLogin() {
       state.token = $('#token').value.trim();
       state.repo = $('#repo').value.trim();
+      state.dsKey = $('#dskey').value.trim();
       if (!state.token || !state.repo) return alert('请填写 Token 和仓库名');
       localStorage.setItem('gh_token', state.token);
       localStorage.setItem('gh_repo', state.repo);
+      localStorage.setItem('ds_key', state.dsKey);
       loadData();
     }
 
@@ -762,6 +675,11 @@
               <label>仓库名</label>
               <input type="text" id="s-repo" value="${esc(state.repo)}">
             </div>
+            <div class="form-group">
+              <label>DeepSeek API Key</label>
+              <input type="password" id="s-dskey" value="${esc(state.dsKey)}" placeholder="sk-xxxxxxxxxxxx">
+              <div class="help-text">在 platform.deepseek.com 获取，用于 AI 整理菜谱与热量估算。</div>
+            </div>
             <button class="btn btn-primary btn-block" onclick="saveSettings()" style="margin-bottom:12px;">保存设置</button>
             <button class="btn btn-secondary btn-block" onclick="logout()">${state.demo ? '退出试用' : '退出登录'}</button>
           </div>
@@ -772,11 +690,14 @@
     function saveSettings() {
       const token = $('#s-token').value.trim();
       const repo = $('#s-repo').value.trim();
+      const dsKey = $('#s-dskey').value.trim();
       if (!token || !repo) return alert('Token 和仓库名不能为空');
       state.token = token;
       state.repo = repo;
+      state.dsKey = dsKey;
       localStorage.setItem('gh_token', token);
       localStorage.setItem('gh_repo', repo);
+      localStorage.setItem('ds_key', dsKey);
       closeModal();
       loadData();
     }
@@ -787,6 +708,7 @@
       state.menus = JSON.parse(JSON.stringify(demoData.menus));
       state.votes = JSON.parse(JSON.stringify(demoData.votes));
       state.currentView = 'home';
+      state.menuDate = todayKey();
       renderApp();
       toast('已进入本地试用模式');
     }
@@ -822,23 +744,12 @@
             <div class="hero-greeting">${greeting()}</div>
             <div class="hero-title serif">今天想吃点什么？</div>
             <div class="hero-stats">
-              <div class="hero-stat">
-                <div class="hero-stat-num">${total}</div>
-                <div class="hero-stat-label">收录菜品</div>
-              </div>
-              <div class="hero-stat">
-                <div class="hero-stat-num">${mealCount}</div>
-                <div class="hero-stat-label">今日安排</div>
-              </div>
+              <div class="hero-stat"><div class="hero-stat-num">${total}</div><div class="hero-stat-label">收录菜品</div></div>
+              <div class="hero-stat"><div class="hero-stat-num">${mealCount}</div><div class="hero-stat-label">今日安排</div></div>
             </div>
           </div>
         </div>
         <div class="quick-grid">
-          <div class="quick-card" onclick="nav('wheel')">
-            <div class="quick-icon">${icon('dice', 'icon-lg')}</div>
-            <div class="quick-title">今天吃什么</div>
-            <div class="quick-desc">让命运决定晚餐</div>
-          </div>
           <div class="quick-card" onclick="nav('menu')">
             <div class="quick-icon">${icon('menu', 'icon-lg')}</div>
             <div class="quick-title">今日菜单</div>
@@ -865,9 +776,7 @@
         <div class="card">
           ${meals.length === 0 || mealCount === 0 ?
             '<p class="help-text" style="margin: 0;">还没有安排今天的菜单，去「菜单」页面添加吧。</p>' :
-            `<div style="display: grid; gap: 16px;">
-              ${meals.map(m => renderMealPreview(m.name, m.items)).join('')}
-            </div>`
+            `<div style="display: grid; gap: 16px;">${meals.map(m => renderMealPreview(m.name, m.items)).join('')}</div>`
           }
         </div>
       `;
@@ -878,9 +787,7 @@
       return `
         <div>
           <div class="caption" style="color: var(--text-tertiary); margin-bottom: 6px;">${esc(name)}</div>
-          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-            ${items.map(d => `<span class="dish-tag">${esc(d)}</span>`).join('')}
-          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">${items.map(d => `<span class="dish-tag">${esc(d)}</span>`).join('')}</div>
         </div>
       `;
     }
@@ -904,10 +811,6 @@
       filterDishes();
     }
 
-    function dishImage(d) {
-      return (d.images && d.images[0]) || d.image || '';
-    }
-
     function filterDishes() {
       const kw = ($('#dish-search')?.value || '').toLowerCase();
       const list = state.dishes.filter(d =>
@@ -927,24 +830,22 @@
         `;
         return;
       }
-      container.innerHTML = `
-        <div class="dish-grid">
-          ${list.map(d => `
-            <div class="dish-card" onclick="showDishDetail('${d.id}')">
-              <div class="dish-img-wrap">
-                ${dishImage(d) ? `<img class="dish-img" src="${dishImage(d)}" alt="${esc(d.name)}">` :
-                  `<div class="dish-img-placeholder">${icon('utensils', 'icon-xl')}</div>`
-                }
-              </div>
-              <div class="dish-info">
-                <div class="dish-name">${esc(d.name)}</div>
-                <div class="dish-meta">${esc(d.category || '未分类')} · ${d.time || '?'}</div>
-                ${d.tags && d.tags.length ? `<div class="dish-tags">${d.tags.slice(0, 2).map(t => `<span class="dish-tag">${esc(t)}</span>`).join('')}</div>` : ''}
-              </div>
+      container.innerHTML = list.map(d => {
+        const meta = [d.category || '未分类', d.time || null, d.calories ? ('约' + d.calories + 'kcal') : null].filter(Boolean).join(' · ');
+        return `
+          <div class="dish-row" onclick="showDishDetail('${d.id}')">
+            <div class="dish-thumb">
+              ${dishImage(d) ? `<img src="${dishImage(d)}" alt="${esc(d.name)}">` : `<div class="dish-img-placeholder">${icon('utensils')}</div>`}
             </div>
-          `).join('')}
-        </div>
-      `;
+            <div class="dish-row-main">
+              <div class="dish-name">${esc(d.name)}</div>
+              <div class="dish-meta">${esc(meta)}</div>
+              ${d.tags && d.tags.length ? `<div class="dish-tags">${d.tags.slice(0, 3).map(t => `<span class="dish-tag">${esc(t)}</span>`).join('')}</div>` : ''}
+            </div>
+            <button class="btn btn-secondary btn-sm dish-add-btn" onclick="event.stopPropagation();quickAddToMenu('${d.id}', this)">${icon('plus')}加入今日<br>菜单</button>
+          </div>
+        `;
+      }).join('');
     }
 
     function showDishDetail(id, imgIdx = 0) {
@@ -968,9 +869,7 @@
         </header>
         <main class="main" style="padding-bottom: 40px;">
           <div class="detail-img-wrap">
-            ${mainImg ? `<img class="detail-img" src="${mainImg}" alt="${esc(dish.name)}">` :
-              `<div class="detail-img-placeholder">${icon('utensils', 'icon-xl')}</div>`
-            }
+            ${mainImg ? `<img class="detail-img" src="${mainImg}" alt="${esc(dish.name)}">` : `<div class="detail-img-placeholder">${icon('utensils', 'icon-xl')}</div>`}
             ${images.length > 1 ? `<div class="detail-gallery">${images.map((img, i) => `<img class="${i === imgIdx ? 'active' : ''}" src="${img}" onclick="showDishDetail('${dish.id}', ${i})">`).join('')}</div>` : ''}
           </div>
           <div class="detail-header">
@@ -978,14 +877,12 @@
             <div class="detail-tags">
               <span class="detail-tag">${esc(dish.category || '未分类')}</span>
               <span class="detail-tag">${icon('clock', '')} ${dish.time || '?'}</span>
+              ${dish.calories ? `<span class="detail-tag kcal-tag">${icon('flame')} 约 ${dish.calories} kcal / 人份</span>` : ''}
               ${(dish.tags || []).map(t => `<span class="detail-tag">${esc(t)}</span>`).join('')}
             </div>
           </div>
           <div class="card info-card">
-            <div class="info-card-title">
-              食材清单
-              <span class="line"></span>
-            </div>
+            <div class="info-card-title">食材清单<span class="line"></span></div>
             ${(dish.ingredients || '').split(/[,，\n]/).filter(Boolean).map((ing, i) => `
               <label class="ingredient-item ${(dish.checkedIngredients || []).includes(i) ? 'checked' : ''}">
                 <input type="checkbox" ${(dish.checkedIngredients || []).includes(i) ? 'checked' : ''} onchange="toggleIngredient('${dish.id}', ${i})">
@@ -994,10 +891,7 @@
             `).join('')}
           </div>
           <div class="card info-card">
-            <div class="info-card-title">
-              制作步骤
-              <span class="line"></span>
-            </div>
+            <div class="info-card-title">制作步骤<span class="line"></span></div>
             ${(dish.steps || '').split(/\n/).filter(Boolean).map((step, i) => `
               <div class="step-item">
                 <div class="step-num">${i + 1}</div>
@@ -1006,8 +900,9 @@
             `).join('')}
           </div>
           <div class="detail-actions">
-            <button class="btn btn-secondary btn-block" onclick="addToMenuPrompt('${dish.id}')">加入今日菜单</button>
-            <button class="btn btn-primary btn-block" onclick="addToWishlist('${dish.id}')">${icon('heart')} 想吃</button>
+            <button class="btn btn-secondary" style="flex:1" onclick="quickAddToMenu('${dish.id}', this)">${icon('plus')} 加入今日菜单</button>
+            <button class="btn btn-secondary" style="flex:1" onclick="aiDishCalories('${dish.id}', this)">${icon('flame')} 估算热量</button>
+            <button class="btn btn-primary" style="flex:1" onclick="addToWishlist('${dish.id}')">${icon('heart')} 想吃</button>
           </div>
         </main>
       `;
@@ -1029,7 +924,9 @@
     function deleteDish(id) {
       if (!confirm('确定删除这道菜吗？')) return;
       state.dishes = state.dishes.filter(d => d.id !== id);
-      saveDishes().then(() => { toast('已删除'); nav('dishes'); }).catch(e => alert('删除失败：' + e.message));
+      nav('dishes');
+      toast('已删除');
+      saveDishes().catch(e => alert('删除失败：' + e.message));
     }
 
     // ================== Add/Edit Dish Modal ==================
@@ -1070,7 +967,10 @@
                 <textarea id="d-ingredients" placeholder="五花肉 500g&#10;生姜 3片&#10;冰糖 20g"></textarea>
               </div>
               <div class="form-group">
-                <label>制作步骤（每行一步）</label>
+                <div class="label-with-action">
+                  <label>制作步骤（每行一步）</label>
+                  <button class="btn btn-ghost btn-xs" onclick="aiOrganizeSteps(this)">${icon('sparkles')} AI 整理流程</button>
+                </div>
                 <textarea id="d-steps" placeholder="1. 五花肉切块焯水&#10;2. 热锅下油炒糖色&#10;3. ..."></textarea>
               </div>
               <div class="form-group">
@@ -1116,13 +1016,9 @@
     async function previewImages(input) {
       const files = Array.from(input.files || []);
       if (!files.length) return;
+      toast('正在处理图片...');
       for (const file of files) {
-        try {
-          const dataUrl = await resizeImage(file);
-          pendingImages.push(dataUrl);
-        } catch (e) {
-          console.error(e);
-        }
+        try { pendingImages.push(await resizeImage(file)); } catch (e) { console.error(e); }
       }
       renderThumbs();
     }
@@ -1138,10 +1034,7 @@
       `).join('');
     }
 
-    function removePendingImage(i) {
-      pendingImages.splice(i, 1);
-      renderThumbs();
-    }
+    function removePendingImage(i) { pendingImages.splice(i, 1); renderThumbs(); }
 
     function resizeImage(file, maxWidth = 1200, quality = 0.85) {
       return new Promise((resolve, reject) => {
@@ -1182,11 +1075,10 @@
       state.dishes.unshift(dish);
       pendingImages = [];
       closeModal();
-      saveDishes().then(() => {
-        toast('菜品已保存');
-        if (state.currentView === 'dishes') renderDishes();
-        else nav('dishes');
-      }).catch(e => alert('保存失败：' + e.message));
+      renderDishes();
+      nav('dishes');
+      toast('菜品已保存');
+      saveDishes().catch(e => alert('保存失败：' + e.message));
     }
 
     function editDish(id) {
@@ -1219,88 +1111,100 @@
       dish.image = pendingImages[0] || '';
       pendingImages = [];
       closeModal();
-      saveDishes().then(() => {
-        toast('修改已保存');
-        showDishDetail(id);
-      }).catch(e => alert('保存失败：' + e.message));
+      showDishDetail(id);
+      toast('修改已保存');
+      saveDishes().catch(e => alert('保存失败：' + e.message));
     }
 
-    // ================== Wheel ==================
-    function renderWheel() {
-      const dishes = state.dishes.length > 1 ? state.dishes : [{ name: '红烧肉' }, { name: '可乐鸡翅' }, { name: '番茄炒蛋' }, { name: '酸菜鱼' }];
-      const first = dishes[0];
-      $('#view-wheel').innerHTML = `
-        <div class="picker-wrap">
-          <div class="picker-circle" id="picker-box">
-            <div class="picker-content">
-              <div class="picker-emoji" id="picker-emoji">🍽️</div>
-              <div class="picker-label">Tonight's Pick</div>
-              <div class="picker-dish serif" id="picker-dish">${esc(first.name)}</div>
-            </div>
-          </div>
-          <button class="btn btn-primary btn-block" id="spin-btn" onclick="spinWheel()" style="max-width: 280px; margin: 0 auto;">开始抽签</button>
-          <div class="picker-result" id="wheel-result"></div>
-        </div>
-      `;
-    }
-
-    let wheelSpinning = false;
-    function spinWheel() {
-      if (wheelSpinning) return;
-      const dishes = state.dishes.length > 1 ? state.dishes : [{ name: '红烧肉' }, { name: '可乐鸡翅' }, { name: '番茄炒蛋' }, { name: '酸菜鱼' }];
-      if (dishes.length < 2) return alert('请至少添加 2 道菜品');
-      wheelSpinning = true;
-      const emojiList = ['🍽️', '🥘', '🍜', '🍲', '🥗', '🍛', '🍝', '🥟'];
-      const pickerDish = $('#picker-dish');
-      const pickerEmoji = $('#picker-emoji');
-      $('#wheel-result').innerHTML = '<p class="help-text">正在纠结中...</p>';
-      let count = 0;
-      const total = 20;
-      const interval = setInterval(() => {
-        const idx = count % dishes.length;
-        pickerDish.textContent = dishes[idx].name;
-        pickerEmoji.textContent = emojiList[count % emojiList.length];
-        count++;
-        if (count >= total) {
-          clearInterval(interval);
-          const winnerIdx = Math.floor(Math.random() * dishes.length);
-          pickerDish.textContent = dishes[winnerIdx].name;
-          pickerEmoji.textContent = '🎉';
-          wheelSpinning = false;
-          const winnerId = dishes[winnerIdx].id || '';
-          $('#wheel-result').innerHTML = `
-            <p class="help-text" style="margin-bottom: 8px;">今晚就吃</p>
-            <div class="title-lg serif" style="color: var(--primary); margin-bottom: 16px;">${esc(dishes[winnerIdx].name)}</div>
-            <button class="btn btn-secondary btn-sm" onclick="addToMenuPrompt('${winnerId}')">加入菜单</button>
-          `;
+    async function aiOrganizeSteps(btn) {
+      const name = $('#d-name').value.trim();
+      const steps = $('#d-steps').value.trim();
+      if (!steps) return alert('请先输入制作流程，再让 AI 整理');
+      const original = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '整理中...'; }
+      try {
+        const res = await dsChat(
+          '你是菜谱编辑助手。把用户输入的菜谱制作流程整理成清晰、简洁的步骤说明。要求：每行一个步骤，不要加序号，不要输出任何与步骤无关的内容。',
+          '菜名：' + (name || '未命名') + '\n制作流程：\n' + steps
+        );
+        if (res) {
+          $('#d-steps').value = res.split('\n').map(s => s.trim()).filter(Boolean).join('\n');
+          toast('已整理完成');
+        } else {
+          toast('AI 返回为空，请重试', 'error');
         }
-      }, 100);
+      } catch (e) {
+        toast(e.message, 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = original; }
+      }
+    }
+
+    async function aiDishCalories(id, btn) {
+      const dish = state.dishes.find(d => d.id === id);
+      if (!dish) return;
+      const original = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '分析中...'; }
+      try {
+        const res = await dsChat(
+          '你是专业营养师。根据菜名、食材和做法，估算这道菜正常成年人一人份的热量。只返回 JSON 对象，格式：{"kcal": 数值}，不要输出其他内容。',
+          '菜名：' + dish.name + '\n食材：' + (dish.ingredients || '未知') + '\n做法：' + (dish.steps || '未知')
+        );
+        const kcal = extractNumber(res);
+        if (kcal === null) { toast('无法解析热量结果，请重试', 'error'); return; }
+        dish.calories = kcal;
+        showDishDetail(id);
+        toast('已估算：约 ' + kcal + ' kcal / 人份');
+        saveDishes().catch(e => alert('保存失败：' + e.message));
+      } catch (e) {
+        toast(e.message, 'error');
+        if (btn) { btn.disabled = false; btn.innerHTML = original; }
+      }
     }
 
     // ================== Menu ==================
     function renderMenu() {
-      const today = todayKey();
-      const meals = state.menus[today] || [];
+      const date = state.menuDate;
+      const meals = state.menus[date] || [];
       $('#view-menu').innerHTML = `
         <div class="section-header">
           <div class="section-title-wrap">
             <div class="section-line"></div>
-            <div class="section-title">${today} 今日菜单</div>
+            <div class="section-title">菜单</div>
           </div>
-          <button class="btn btn-secondary btn-sm" onclick="addMeal()">${icon('plus')} 新建一餐</button>
+        </div>
+        <div class="menu-date-nav">
+          <button class="icon-btn" onclick="shiftDay(-1)" title="前一天">${icon('chevronLeft')}</button>
+          <div class="menu-date-label serif">${esc(dateLabel(date))}${date === todayKey() ? ' · 今天' : ''}</div>
+          <button class="icon-btn" onclick="shiftDay(1)" title="后一天">${icon('chevronRight')}</button>
+          <button class="btn btn-ghost btn-sm" onclick="goToday()">今天</button>
+        </div>
+        <div class="menu-toolbar">
+          <button class="btn btn-secondary btn-sm" style="padding:12px 10px" onclick="calcMenuCalories(this)">${icon('flame')} 计算本日热量</button>
+          <button class="btn btn-secondary btn-sm" style="padding:12px 10px" onclick="addMeal()">${icon('plus')} 新建一餐</button>
         </div>
         ${meals.length === 0 ?
           `<div class="empty-state">
             <div class="empty-icon">${icon('menu', 'icon-xl')}</div>
-            <p>还没有安排今天的菜单</p>
-            <p class="help-text">点击「新建一餐」开始规划</p>
+            <p>${date === todayKey() ? '还没有安排今天的菜单' : '这一天没有菜单记录'}</p>
+            <p class="help-text">点「新建一餐」开始规划，或在菜谱页一键加入</p>
           </div>` :
-          meals.map(m => renderMealCard(m)).join('')
+          meals.map(m => renderMealCard(m, date)).join('')
         }
       `;
     }
 
-    function renderMealCard(meal) {
+    function shiftDay(offset) {
+      state.menuDate = dateWithOffset(state.menuDate, offset);
+      renderMenu();
+    }
+
+    function goToday() {
+      state.menuDate = todayKey();
+      renderMenu();
+    }
+
+    function renderMealCard(meal, date) {
       const items = meal.items || [];
       return `
         <div class="card meal-card">
@@ -1308,7 +1212,7 @@
             <div class="meal-title"><span class="meal-dot"></span>${esc(meal.name)}</div>
             <div class="meal-actions">
               <button class="btn btn-ghost btn-xs" onclick="renameMeal('${meal.id}')">重命名</button>
-              <button class="btn btn-secondary btn-xs" onclick="addToMenuPrompt('','${meal.id}')">${icon('plus')} 添加</button>
+              <button class="btn btn-secondary btn-xs" onclick="showAddItemModal('${meal.id}')">${icon('plus')} 添加</button>
               <button class="btn btn-ghost btn-xs" onclick="deleteMeal('${meal.id}')">${icon('trash')}</button>
             </div>
           </div>
@@ -1333,17 +1237,19 @@
         defaultValue: '晚餐',
         onConfirm: name => {
           if (!name) return;
-          const today = todayKey();
-          state.menus[today] = state.menus[today] || [];
-          state.menus[today].push({ id: genId(), name, items: [] });
-          saveMenus().then(() => { toast('已新建「' + name + '」'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
+          const date = state.menuDate;
+          state.menus[date] = state.menus[date] || [];
+          state.menus[date].push({ id: genId(), name, items: [] });
+          renderMenu();
+          toast('已新建「' + name + '」');
+          saveMenus().catch(e => alert('保存失败：' + e.message));
         }
       });
     }
 
     function renameMeal(mealId) {
-      const today = todayKey();
-      const meals = state.menus[today] || [];
+      const date = state.menuDate;
+      const meals = state.menus[date] || [];
       const meal = meals.find(m => m.id === mealId);
       if (!meal) return;
       openPrompt({
@@ -1352,75 +1258,190 @@
         onConfirm: name => {
           if (!name) return;
           meal.name = name;
-          saveMenus().then(() => { toast('已重命名'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
+          renderMenu();
+          toast('已重命名');
+          saveMenus().catch(e => alert('保存失败：' + e.message));
         }
       });
     }
 
     function deleteMeal(mealId) {
       if (!confirm('确定删除这一餐？')) return;
-      const today = todayKey();
-      state.menus[today] = (state.menus[today] || []).filter(m => m.id !== mealId);
-      saveMenus().then(() => { toast('已删除'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
+      const date = state.menuDate;
+      state.menus[date] = (state.menus[date] || []).filter(m => m.id !== mealId);
+      renderMenu();
+      toast('已删除');
+      saveMenus().catch(e => alert('保存失败：' + e.message));
     }
 
-    function addToMenuPrompt(dishId, mealId) {
-      const dish = state.dishes.find(d => d.id === dishId);
-      const name = dish ? dish.name : '';
-      const today = todayKey();
-      state.menus[today] = state.menus[today] || [];
-      const meals = state.menus[today];
+    function showAddItemModal(mealId) {
+      const date = state.menuDate;
+      const meals = state.menus[date] || [];
+      const meal = meals.find(m => m.id === mealId);
+      if (!meal) return;
+      const modal = $('#modal');
+      modal.innerHTML = `
+        <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+          <div class="modal">
+            <div class="modal-header">
+              <h3 class="modal-title">添加到「${esc(meal.name)}」</h3>
+              <button class="close-btn" onclick="closeModal()">${icon('close')}</button>
+            </div>
+            <div class="picker-search">
+              <input type="text" id="picker-kw" placeholder="搜索菜谱..." oninput="renderPickerList('${mealId}')">
+            </div>
+            <div class="picker-list" id="picker-list"></div>
+            <div class="picker-divider">手动输入</div>
+            <div class="manual-add-row">
+              <input type="text" id="manual-name" placeholder="输入菜名，例如：红烧肉">
+              <button class="btn btn-primary btn-sm" onclick="addManualItem('${mealId}')">添加</button>
+            </div>
+          </div>
+        </div>
+      `;
+      renderPickerList(mealId);
+    }
 
-      const addToMeal = mealName => {
-        if (!mealName) return;
-        let meal = meals.find(m => m.id === mealId);
-        if (!meal) {
-          meal = meals.find(m => m.name === mealName);
-          if (!meal) {
-            meal = { id: genId(), name: mealName, items: [] };
-            meals.push(meal);
-          }
-        }
-        const addName = name || mealName;
-        if (!meal.items.includes(addName)) meal.items.push(addName);
-        saveMenus().then(() => { toast('已加入「' + meal.name + '」'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
-      };
-
-      if (mealId) {
-        const meal = meals.find(m => m.id === mealId);
-        if (!name) {
-          openPrompt({ title: '添加菜品', placeholder: '菜名', onConfirm: val => { if (val) addToMeal(meal.name); } });
-        } else {
-          addToMeal(meal.name);
-        }
-      } else {
-        const existingNames = meals.map(m => m.name).join(' / ') || '暂无';
-        if (name) {
-          openPrompt({
-            title: '加入哪一餐',
-            message: '可输入已有名称或新名称。当前：' + existingNames,
-            placeholder: '例如：晚餐',
-            defaultValue: '晚餐',
-            onConfirm: addToMeal
-          });
-        } else {
-          openPrompt({ title: '菜名', placeholder: '例如：红烧肉', onConfirm: val => {
-            if (!val) return;
-            dishId = '';
-            name = val;
-            openPrompt({ title: '加入哪一餐', message: '当前：' + existingNames, placeholder: '例如：晚餐', defaultValue: '晚餐', onConfirm: addToMeal });
-          }});
-        }
+    function renderPickerList(mealId) {
+      const date = state.menuDate;
+      const meals = state.menus[date] || [];
+      const meal = meals.find(m => m.id === mealId);
+      const box = $('#picker-list');
+      if (!box || !meal) return;
+      const kw = ($('#picker-kw')?.value || '').toLowerCase();
+      const list = state.dishes.filter(d => d.name.toLowerCase().includes(kw));
+      if (!list.length) {
+        box.innerHTML = '<p class="help-text" style="margin:0;">没有匹配的菜谱</p>';
+        return;
       }
+      box.innerHTML = list.map(d => `
+        <div class="picker-chip" onclick="addDishToMeal('${mealId}', '${esc(d.name).replace(/'/g, "\\'")}')">${esc(d.name)}</div>
+      `).join('');
+    }
+
+    function addDishToMeal(mealId, dishName) {
+      const date = state.menuDate;
+      const meals = state.menus[date] || [];
+      const meal = meals.find(m => m.id === mealId);
+      if (!meal) return;
+      if (!meal.items.includes(dishName)) meal.items.push(dishName);
+      renderMenu();
+      toast('已加入「' + meal.name + '」');
+      saveMenus().catch(e => alert('保存失败：' + e.message));
+      const kw = $('#picker-kw');
+      if (kw) { kw.value = ''; renderPickerList(mealId); }
+    }
+
+    function addManualItem(mealId) {
+      const name = $('#manual-name').value.trim();
+      if (!name) return;
+      addDishToMeal(mealId, name);
+      $('#manual-name').value = '';
+    }
+
+    // One-tap add from dish cards / detail: create (or reuse) today's day-named meal
+    function quickAddToMenu(dishId, btn) {
+      const dish = state.dishes.find(d => d.id === dishId);
+      if (!dish) return;
+      const today = todayKey();
+      const mealName = dayName();
+      state.menus[today] = state.menus[today] || [];
+      let meal = state.menus[today].find(m => m.name === mealName);
+      if (!meal) {
+        meal = { id: genId(), name: mealName, items: [] };
+        state.menus[today].push(meal);
+      }
+      if (meal.items.includes(dish.name)) {
+        toast('「' + dish.name + '」已在今日菜单中');
+        return;
+      }
+      meal.items.push(dish.name);
+      if (btn) {
+        const original = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '已加入';
+        setTimeout(() => { btn.disabled = false; btn.innerHTML = original; }, 1200);
+      }
+      toast('已加入「' + mealName + '」');
+      saveMenus().catch(e => alert('保存失败：' + e.message));
     }
 
     function removeFromMenu(mealId, name) {
-      const today = todayKey();
-      const meals = state.menus[today] || [];
+      const date = state.menuDate;
+      const meals = state.menus[date] || [];
       const meal = meals.find(m => m.id === mealId);
       if (!meal) return;
       meal.items = meal.items.filter(n => n !== name);
-      saveMenus().then(() => { toast('已移除'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
+      renderMenu();
+      toast('已移除');
+      saveMenus().catch(e => alert('保存失败：' + e.message));
+    }
+
+    async function calcMenuCalories(btn) {
+      const date = state.menuDate;
+      const meals = (state.menus[date] || []).filter(m => (m.items || []).length);
+      if (!meals.length) return toast('该日期还没有菜品');
+      const names = [...new Set(meals.flatMap(m => m.items))];
+      const cache = getCalCache();
+      const kcalOf = n => {
+        const d = state.dishes.find(x => x.name === n);
+        if (d && d.calories) return d.calories;
+        if (cache[n]) return cache[n];
+        return null;
+      };
+      const original = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '计算中...'; }
+      try {
+        const missing = names.filter(n => kcalOf(n) === null);
+        if (missing.length) {
+          const res = await dsChat(
+            '你是专业营养师。请估算下列每道菜品正常成年人一人份的热量（千卡 kcal）。只返回 JSON 对象，键为菜名，值为数字，不要输出任何其他内容。',
+            '菜品清单：' + missing.join('、')
+          );
+          const m = res.match(/\{[\s\S]*\}/);
+          if (m) {
+            try {
+              const obj = JSON.parse(m[0]);
+              Object.keys(obj).forEach(k => {
+                const v = extractNumber(obj[k]);
+                if (v !== null) cache[k] = v;
+              });
+              setCalCache(cache);
+            } catch (parseErr) { /* ignore */ }
+          }
+        }
+        let total = 0;
+        const body = meals.map(meal => {
+          let sub = 0;
+          const rows = meal.items.map(n => {
+            const k = kcalOf(n);
+            if (k) sub += k;
+            return `<div class="kcal-row"><span>${esc(n)}</span><span>${k ? '约 ' + k + ' kcal' : '未知'}</span></div>`;
+          }).join('');
+          total += sub;
+          return `<div class="kcal-meal"><div class="kcal-meal-title">${esc(meal.name)}</div>${rows}<div class="kcal-sub">小计：约 ${sub} kcal</div></div>`;
+        }).join('');
+        $('#modal').innerHTML = `
+          <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+            <div class="modal" style="max-width:440px;">
+              <div class="modal-header">
+                <h3 class="modal-title">${esc(date)} 热量估算</h3>
+                <button class="close-btn" onclick="closeModal()">${icon('close')}</button>
+              </div>
+              <div class="kcal-total">
+                <div class="kcal-total-num serif">${total} kcal</div>
+                <div class="help-text">全天一人份估算总热量</div>
+              </div>
+              ${body}
+              <p class="help-text" style="margin-top:10px;">热量为 AI 估算值，仅供参考。</p>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        toast(e.message, 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = original; }
+      }
     }
 
     function addToWishlist(id) {
@@ -1463,9 +1484,7 @@
                   <div class="vote-option-count">${v.bCount || 0} 票</div>
                 </div>
               </div>
-              <div class="vote-bar-wrap">
-                <div class="vote-bar" style="width: ${votePercent(v)}%;"></div>
-              </div>
+              <div class="vote-bar-wrap"><div class="vote-bar" style="width: ${votePercent(v)}%;"></div></div>
               <button class="btn btn-ghost btn-sm" style="margin-top: 12px;" onclick="deleteVote('${v.id}')">删除投票</button>
             </div>
           `).join('')
@@ -1485,20 +1504,26 @@
       if (!a || !b) return alert('请填写两个选项');
       state.votes.push({ id: genId(), a, b, aCount: 0, bCount: 0, createdAt: Date.now() });
       closeModal();
-      saveVotes().then(() => { toast('投票已发起'); renderVotes(); }).catch(e => alert('保存失败：' + e.message));
+      renderVotes();
+      toast('投票已发起');
+      saveVotes().catch(e => alert('保存失败：' + e.message));
     }
 
     function doVote(id, option) {
       const v = state.votes.find(x => x.id === id);
       if (!v) return;
       v[option + 'Count'] = (v[option + 'Count'] || 0) + 1;
-      saveVotes().then(() => { toast('投票成功'); renderVotes(); }).catch(e => alert('保存失败：' + e.message));
+      renderVotes();
+      toast('投票成功');
+      saveVotes().catch(e => alert('保存失败：' + e.message));
     }
 
     function deleteVote(id) {
       if (!confirm('删除这个投票？')) return;
       state.votes = state.votes.filter(v => v.id !== id);
-      saveVotes().then(() => { toast('已删除'); renderVotes(); }).catch(e => alert('保存失败：' + e.message));
+      renderVotes();
+      toast('已删除');
+      saveVotes().catch(e => alert('保存失败：' + e.message));
     }
 
     // ================== Init ==================
