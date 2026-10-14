@@ -505,8 +505,10 @@
         ...options
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || `HTTP ${res.status}`);
+        const errBody = await res.json().catch(() => ({}));
+        const err = new Error(errBody.message || `HTTP ${res.status}`);
+        err.status = res.status;
+        throw err;
       }
       return res.status === 204 ? null : await res.json();
     }
@@ -516,7 +518,7 @@
         const data = await ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`);
         return { content: JSON.parse(decodeURIComponent(escape(atob(data.content)))), sha: data.sha };
       } catch (e) {
-        if (e.message.includes('404')) return { content: null, sha: null };
+        if (e.status === 404 || e.message.includes('404')) return { content: null, sha: null };
         throw e;
       }
     }
