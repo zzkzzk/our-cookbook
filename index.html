@@ -444,6 +444,9 @@
     }
 
     // ================== GitHub API ==================
+    let repoMeta = null;
+    let treeCache = null;
+
     function parseRepo() {
       const parts = state.repo.split('/');
       state.owner = parts[0] || '';
@@ -474,14 +477,27 @@
       }
     }
 
-    async function getFile(path) {
-      try {
-        const data = await ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`);
-        return { content: JSON.parse(decodeURIComponent(escape(atob(data.content)))), sha: data.sha };
-      } catch (e) {
-        if (e.status === 404 || (e.message && e.message.includes('404'))) return { content: null, sha: null };
-        throw e;
+    async function getBranch() {
+      if (!repoMeta) repoMeta = await ghApi(`/repos/${state.owner}/${state.repoName}`);
+      return repoMeta.default_branch || 'main';
+    }
+
+    async function getTree(force) {
+      if (force) treeCache = null;
+      if (!treeCache) {
+        const branch = await getBranch();
+        treeCache = await ghApi(`/repos/${state.owner}/${state.repoName}/git/trees/${branch}?recursive=1`);
       }
+      return treeCache;
+    }
+
+    async function getFile(path) {
+      const tree = await getTree();
+      const entry = (tree.tree || []).find(t => t.path === path);
+      if (!entry || entry.type !== 'blob') return { content: null, sha: null };
+      const blob = await ghApi(`/repos/${state.owner}/${state.repoName}/git/blobs/${entry.sha}`);
+      const text = decodeURIComponent(escape(atob(blob.content)));
+      return { content: JSON.parse(text), sha: entry.sha };
     }
 
     async function saveFile(path, content, sha) {
@@ -490,10 +506,38 @@
         content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))))
       };
       if (sha) body.sha = sha;
-      return ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`, {
+      const r = await ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`, {
         method: 'PUT',
         body: JSON.stringify(body)
       });
+      treeCache = null;
+      return r;
+    }
+
+    async function saveFileRaw(path, base64Content) {
+      const body = { message: `upload ${path}`, content: base64Content };
+      const r = await ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`, {
+        method: 'PUT',
+        body: JSON.stringify(body)
+      });
+      treeCache = null;
+      return r;
+    }
+
+    async function uploadDishImages(dataUrls, dishId) {
+      if (state.demo) return dataUrls.slice();
+      const out = [];
+      for (let i = 0; i < dataUrls.length; i++) {
+        const u = dataUrls[i];
+        if (u.indexOf('data:') === 0) {
+          const path = `data/images/${dishId}-${i + 1}.jpg`;
+          await saveFileRaw(path, u.split(',')[1]);
+          out.push(path);
+        } else {
+          out.push(u);
+        }
+      }
+      return out;
     }
 
     async function loadData() {
@@ -1036,7 +1080,7 @@
 
     function removePendingImage(i) { pendingImages.splice(i, 1); renderThumbs(); }
 
-    function resizeImage(file, maxWidth = 1200, quality = 0.85) {
+    function resizeImage(file, maxWidth = 1080, quality = 0.72) {
       return new Promise((resolve, reject) => {
         const img = new Image();
         const reader = new FileReader();
@@ -1056,19 +1100,27 @@
       });
     }
 
-    function saveDish() {
+    async function saveDish() {
       const name = $('#d-name').value.trim();
       if (!name) return alert('请填写菜品名称');
+      const dishId = genId();
+      toast('正在保存...');
+      let imagePaths = [];
+      try {
+        imagePaths = await uploadDishImages(pendingImages, dishId);
+      } catch (e) {
+        return alert('图片上传失败：' + e.message);
+      }
       const dish = {
-        id: genId(),
+        id: dishId,
         name,
         category: $('#d-category').value,
         time: $('#d-time').value.trim(),
         tags: $('#d-tags').value.trim().split(/\s+/).filter(Boolean),
         ingredients: $('#d-ingredients').value.trim(),
         steps: $('#d-steps').value.trim(),
-        image: pendingImages[0] || '',
-        images: pendingImages,
+        image: imagePaths[0] || '',
+        images: imagePaths,
         checkedIngredients: [],
         createdAt: Date.now()
       };
@@ -1099,7 +1151,7 @@
       }, 50);
     }
 
-    function updateDish(id) {
+    async function updateDish(id) {
       const dish = state.dishes.find(d => d.id === id);
       dish.name = $('#d-name').value.trim();
       dish.category = $('#d-category').value;
@@ -1107,8 +1159,13 @@
       dish.tags = $('#d-tags').value.trim().split(/\s+/).filter(Boolean);
       dish.ingredients = $('#d-ingredients').value.trim();
       dish.steps = $('#d-steps').value.trim();
-      dish.images = pendingImages;
-      dish.image = pendingImages[0] || '';
+      toast('正在保存...');
+      try {
+        dish.images = await uploadDishImages(pendingImages, id);
+      } catch (e) {
+        return alert('图片上传失败：' + e.message);
+      }
+      dish.image = dish.images[0] || '';
       pendingImages = [];
       closeModal();
       showDishDetail(id);
