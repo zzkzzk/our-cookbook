@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1F3D32">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>二人食光</title>
+  <style>
+    :root {
+      --bg: #F5F2EE;
+      --surface: #FFFFFF;
+      --surface-2: #F9F7F4;
+      --primary: #1F3D32;
+      --primary-light: #2E5244;
+      --accent: #B89B72;
+      --accent-light: #D4BD96;
+      --text: #1E1E1E;
+      --text-secondary: #6B6B6B;
+      --text-tertiary: #A8A4A0;
+      --border: #EAE6E1;
+      --shadow-sm: 0 2px 8px rgba(31, 41, 55, 0.04);
+      --shadow: 0 8px 32px rgba(31, 41, 55, 0.06);
+      --shadow-lg: 0 20px 60px rgba(31, 41, 55, 0.1);
+      --radius-sm: 14px;
+      --radius: 24px;
+      --radius-lg: 32px;
+      --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      background-image: radial-gradient(ellipse at 50% 0%, rgba(184, 155, 114, 0.08) 0%, transparent 60%);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app { min-height: 100%; display: flex; flex-direction: column; }
+    .hidden { display: none !important; }
+
+    .serif { font-family: "Noto Serif SC", "Songti SC", "STSong", Georgia, serif; }
+
+    /* Icons */
+    .icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .icon-lg { width: 24px; height: 24px; }
+    .icon-xl { width: 32px; height: 32px; }
+
+    /* Typography */
+    h1, h2, h3, h4, p { margin: 0; }
+    .title-xl { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; }
+    .title-lg { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+    .title-md { font-size: 20px; font-weight: 600; }
+    .text-secondary { color: var(--text-secondary); }
+    .text-tertiary { color: var(--text-tertiary); }
+    .caption { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border: none; border-radius: 16px; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: var(--transition); padding: 14px 24px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white; box-shadow: 0 6px 18px rgba(31, 61, 50, 0.22);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(31, 61, 50, 0.28); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-secondary { background: var(--surface); color: var(--primary); border: 1.5px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); background: rgba(184, 155, 114, 0.04); }
+    .btn-ghost { background: transparent; color: var(--text-secondary); padding: 10px 14px; }
+    .btn-ghost:hover { color: var(--primary); background: rgba(31, 61, 50, 0.04); }
+    .btn-block { width: 100%; }
+    .btn-sm { padding: 10px 16px; font-size: 13px; border-radius: 12px; }
+    .btn-xs { padding: 6px 10px; font-size: 12px; border-radius: 8px; }
+
+    /* Cards */
+    .card {
+      background: var(--surface); border-radius: var(--radius); padding: 24px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .card-hover:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+    /* Header */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(245, 242, 238, 0.88);
+      backdrop-filter: blur(16px); border-bottom: 1px solid rgba(234, 230, 225, 0.8);
+    }
+    .header-content {
+      max-width: 840px; margin: 0 auto; padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--primary); }
+    .logo-mark {
+      width: 34px; height: 34px; border-radius: 10px; background: var(--primary);
+      display: flex; align-items: center; justify-content: center; color: var(--accent);
+      box-shadow: 0 4px 10px rgba(31, 61, 50, 0.18);
+    }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--primary); display: flex; align-items: center;
+      justify-content: center; cursor: pointer; transition: var(--transition);
+    }
+    .icon-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* Main */
+    .main { flex: 1; max-width: 840px; width: 100%; margin: 0 auto; padding: 24px 20px 120px; }
+
+    /* Forms */
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+    input, textarea, select {
+      width: 100%; padding: 14px 16px; border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 15px; background: var(--surface); color: var(--text);
+      transition: var(--transition); font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31, 61, 50, 0.06); }
+    textarea { min-height: 100px; resize: vertical; line-height: 1.7; }
+    .help-text { font-size: 13px; color: var(--text-tertiary); margin-top: 6px; }
+
+    /* Login */
+    .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .login-card { width: 100%; max-width: 440px; }
+    .login-header { text-align: center; margin-bottom: 36px; }
+    .login-mark {
+      width: 72px; height: 72px; border-radius: 22px; background: var(--primary);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 22px;
+      color: var(--accent); box-shadow: var(--shadow-lg);
+    }
+    .login-title { font-size: 30px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+    .login-title .serif { font-weight: 700; }
+    .login-sub { color: var(--text-secondary); font-size: 15px; }
+
+    /* Home */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #153025 100%);
+      border-radius: var(--radius-lg); padding: 36px; color: white;
+      margin-bottom: 28px; position: relative; overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -40%; right: -15%; width: 340px; height: 340px;
+      background: radial-gradient(circle, rgba(184, 155, 114, 0.22) 0%, transparent 65%);
+    }
+    .hero::after {
+      content: ''; position: absolute; bottom: -30%; left: -10%; width: 260px; height: 260px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-greeting { font-size: 13px; opacity: 0.75; margin-bottom: 6px; letter-spacing: 0.06em; }
+    .hero-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+    .hero-title .serif { font-weight: 700; }
+    .hero-stats { display: flex; gap: 28px; margin-top: 24px; }
+    .hero-stat { text-align: center; }
+    .hero-stat-num { font-size: 26px; font-weight: 700; color: var(--accent-light); }
+    .hero-stat-label { font-size: 12px; opacity: 0.75; }
+
+    .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
+    .section-title-wrap { display: flex; align-items: center; gap: 10px; }
+    .section-title { font-size: 18px; font-weight: 700; color: var(--primary); }
+    .section-line { width: 4px; height: 20px; border-radius: 2px; background: var(--accent); }
+
+    .quick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 32px; }
+    .quick-card {
+      background: var(--surface); border-radius: var(--radius); padding: 22px 18px;
+      border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer;
+      transition: var(--transition); text-align: left;
+    }
+    .quick-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--accent-light); }
+    .quick-card:active { transform: translateY(0); }
+    .quick-icon {
+      width: 46px; height: 46px; border-radius: 14px; background: var(--surface-2);
+      display: flex; align-items: center; justify-content: center; color: var(--primary); margin-bottom: 14px;
+      transition: var(--transition);
+    }
+    .quick-card:hover .quick-icon { background: var(--primary); color: white; }
+    .quick-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .quick-desc { font-size: 12px; color: var(--text-tertiary); }
+
+    /* Dishes */
+    .search-box { position: relative; margin-bottom: 22px; }
+    .search-box .icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); }
+    .search-box input { padding-left: 46px; }
+    .dish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 18px; }
+    .dish-card {
+      background: var(--surface); border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer;
+      transition: var(--transition);
+    }
+    .dish-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .dish-img-wrap { position: relative; aspect-ratio: 4/3; background: linear-gradient(135deg, #f0ede9 0%, #e8e4de 100%); overflow: hidden; }
+    .dish-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .dish-card:hover .dish-img { transform: scale(1.05); }
+    .dish-img-placeholder {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      color: var(--text-tertiary);
+    }
+    .dish-info { padding: 16px; }
+    .dish-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .dish-meta { font-size: 12px; color: var(--text-tertiary); }
+    .dish-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .dish-tag {
+      font-size: 11px; font-weight: 500; color: var(--primary); background: rgba(31, 61, 50, 0.06);
+      padding: 4px 8px; border-radius: 6px;
+    }
+    .empty-state { text-align: center; padding: 70px 20px; color: var(--text-tertiary); }
+    .empty-icon { width: 64px; height: 64px; margin: 0 auto 16px; color: var(--border); }
+
+    /* Dish Detail */
+    .detail-img-wrap { position: relative; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; aspect-ratio: 16/10; background: linear-gradient(135deg, #f0ede9 0%, #e8e4de 100%); }
+    .detail-img { width: 100%; height: 100%; object-fit: cover; }
+    .detail-img-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); }
+    .detail-gallery { position: absolute; bottom: 12px; left: 12px; right: 12px; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+    .detail-gallery::-webkit-scrollbar { display: none; }
+    .detail-gallery img {
+      width: 56px; height: 56px; object-fit: cover; border-radius: 10px; border: 2px solid white;
+      cursor: pointer; opacity: 0.85; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .detail-gallery img:hover, .detail-gallery img.active { opacity: 1; transform: scale(1.05); }
+    .detail-header { margin-bottom: 22px; }
+    .detail-title { font-size: 30px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+    .detail-title .serif { font-weight: 700; }
+    .detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .detail-tag {
+      display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary);
+      background: var(--surface); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px;
+    }
+
+    .info-card { margin-bottom: 16px; }
+    .info-card-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .info-card-title .line { flex: 1; height: 1px; background: var(--border); }
+    .ingredient-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .ingredient-item:last-child { border-bottom: none; }
+    .ingredient-item input[type="checkbox"] {
+      width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer;
+    }
+    .ingredient-item span { font-size: 15px; color: var(--text); }
+    .ingredient-item.checked span { text-decoration: line-through; color: var(--text-tertiary); }
+    .step-item { display: flex; gap: 16px; margin-bottom: 18px; }
+    .step-num {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      background: var(--primary); color: white; display: flex; align-items: center;
+      justify-content: center; font-size: 13px; font-weight: 700;
+    }
+    .step-text { flex: 1; padding-top: 5px; font-size: 15px; color: var(--text); line-height: 1.7; }
+    .detail-actions { display: flex; gap: 12px; margin-top: 28px; }
+
+    /* Picker */
+    .picker-wrap { text-align: center; padding: 20px 0; }
+    .picker-circle {
+      width: 280px; height: 280px; margin: 0 auto 36px; border-radius: 50%;
+      background: conic-gradient(from 180deg, var(--primary) 0%, var(--primary-light) 35%, var(--accent) 65%, var(--primary) 100%);
+      display: flex; align-items: center; justify-content: center; color: white;
+      box-shadow: var(--shadow-lg); position: relative;
+    }
+    .picker-circle::before {
+      content: ''; position: absolute; inset: 14px; border-radius: 50%;
+      background: linear-gradient(145deg, var(--primary) 0%, #153025 100%);
+    }
+    .picker-content { position: relative; z-index: 1; padding: 0 30px; }
+    .picker-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65; margin-bottom: 10px; }
+    .picker-dish { font-size: 32px; font-weight: 700; line-height: 1.25; }
+    .picker-emoji { font-size: 44px; margin-bottom: 12px; }
+    .picker-result { min-height: 100px; margin-top: 28px; }
+
+    /* Menu */
+    .meal-card { margin-bottom: 16px; }
+    .meal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .meal-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; color: var(--primary); }
+    .meal-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    .meal-actions { display: flex; gap: 6px; }
+    .menu-items { display: flex; flex-wrap: wrap; gap: 8px; }
+    .menu-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px;
+      padding: 8px 12px; font-size: 14px; color: var(--text);
+    }
+    .menu-chip button {
+      width: 18px; height: 18px; border-radius: 50%; border: none; background: transparent;
+      color: var(--text-tertiary); cursor: pointer; display: flex; align-items: center; justify-content: center;
+      padding: 0; transition: var(--transition);
+    }
+    .menu-chip button:hover { background: var(--border); color: var(--text); }
+    .menu-chip svg { width: 12px; height: 12px; }
+
+    /* Vote */
+    .vote-card { margin-bottom: 16px; }
+    .vote-header { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--primary); }
+    .vote-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .vote-option {
+      background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      padding: 18px; text-align: center; cursor: pointer; transition: var(--transition);
+    }
+    .vote-option:hover { border-color: var(--accent); background: rgba(184, 155, 114, 0.04); }
+    .vote-option-name { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+    .vote-option-count { font-size: 12px; color: var(--text-tertiary); }
+    .vote-bar-wrap { height: 6px; background: var(--border); border-radius: 3px; margin-top: 14px; overflow: hidden; }
+    .vote-bar { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%); transition: width 0.4s ease; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(31, 41, 55, 0.35);
+      backdrop-filter: blur(6px); z-index: 200; display: flex;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal {
+      background: var(--surface); width: 100%; max-width: 560px; max-height: 90vh;
+      border-radius: var(--radius-lg); padding: 28px; overflow-y: auto;
+      box-shadow: var(--shadow-lg); animation: fadeScale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeScale { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .modal-title { font-size: 20px; font-weight: 700; color: var(--primary); }
+    .close-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .close-btn:hover { background: var(--bg); }
+
+    /* Image upload */
+    .image-upload { border: 2px dashed var(--border); border-radius: var(--radius-sm); padding: 18px; text-align: center; transition: var(--transition); }
+    .image-upload:hover { border-color: var(--accent-light); background: rgba(184, 155, 114, 0.02); }
+    .image-upload input { display: none; }
+    .upload-trigger { color: var(--primary); font-weight: 600; cursor: pointer; }
+    .upload-hint { font-size: 12px; color: var(--text-tertiary); margin-top: 6px; }
+    .thumb-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .thumb {
+      position: relative; width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
+    }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb .remove {
+      position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(0,0,0,0.5); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;
+    }
+    .thumb .remove svg { width: 12px; height: 12px; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--primary); color: white; padding: 12px 22px;
+      border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 300;
+      opacity: 0; transition: all 0.3s ease; pointer-events: none; box-shadow: var(--shadow-lg);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 100;
+      background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px);
+      border: 1px solid rgba(234, 230, 225, 0.9); border-radius: 28px;
+      padding: 8px 12px; box-shadow: var(--shadow-lg);
+    }
+    .bottom-nav-content { display: flex; gap: 4px; }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 8px 14px; cursor: pointer; color: var(--text-tertiary); transition: var(--transition);
+      border: none; background: transparent; font-family: inherit; font-size: 10px; font-weight: 600; border-radius: 18px;
+    }
+    .nav-item .icon { transition: var(--transition); }
+    .nav-item.active { color: var(--primary); background: rgba(31, 61, 50, 0.06); }
+    .nav-item.active .icon { stroke-width: 2.2; }
+    .nav-item:hover { color: var(--primary); }
+
+    .view { display: none; animation: fadeIn 0.3s ease; }
+    .view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .loading { text-align: center; padding: 90px 20px; color: var(--text-tertiary); }
+    .spinner { width: 28px; height: 28px; border: 2.5px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 480px) {
+      .title-xl { font-size: 28px; }
+      .hero { padding: 28px; }
+      .hero-title { font-size: 24px; }
+      .dish-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .quick-grid { gap: 12px; }
+      .picker-circle { width: 240px; height: 240px; }
+      .picker-dish { font-size: 26px; }
+      .modal { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    // ================== State ==================
+    const state = {
+      token: localStorage.getItem('gh_token') || '',
+      repo: localStorage.getItem('gh_repo') || 'zzkzzk/our-cookbook',
+      owner: '',
+      repoName: '',
+      dishes: [],
+      menus: {},
+      votes: [],
+      currentView: 'home',
+      loading: false,
+      demo: false
+    };
+
+    const demoData = {
+      dishes: [
+        {
+          id: 'demo-1',
+          name: '红烧肉',
+          category: '荤菜',
+          time: '60 分钟',
+          tags: ['下饭', '经典'],
+          ingredients: '五花肉 500g\n生姜 3片\n冰糖 20g\n生抽 2勺\n老抽 1勺\n料酒 2勺',
+          steps: '五花肉切块，冷水下锅焯水去腥。\n热锅少油，放入冰糖小火炒出糖色。\n倒入五花肉翻炒上色。\n加入姜片、生抽、老抽、料酒和没过肉的热水。\n小火炖煮 45 分钟，最后大火收汁即可。',
+          image: '',
+          images: [],
+          checkedIngredients: [],
+          createdAt: Date.now()
+        },
+        {
+          id: 'demo-2',
+          name: '番茄炒蛋',
+          category: '素菜',
+          time: '10 分钟',
+          tags: ['快手', '家常菜'],
+          ingredients: '番茄 2个\n鸡蛋 3个\n葱花 少许\n盐 适量\n糖 1小勺',
+          steps: '番茄切块，鸡蛋打散备用。\n热锅热油，倒入蛋液炒散盛出。\n锅中再加少许油，放入番茄炒出汁。\n倒入鸡蛋，加盐和糖调味。\n撒上葱花，翻炒均匀出锅。',
+          image: '',
+          images: [],
+          checkedIngredients: [],
+          createdAt: Date.now()
+        },
+        {
+          id: 'demo-3',
+          name: '可乐鸡翅',
+          category: '荤菜',
+          time: '30 分钟',
+          tags: ['甜口', '人气'],
+          ingredients: '鸡翅 8个\n可乐 1罐\n生抽 2勺\n老抽 半勺\n姜片 3片',
+          steps: '鸡翅两面划刀，冷水加姜片焯水。\n沥干水分后煎至两面金黄。\n倒入可乐、生抽、老抽。\n中火焖煮 15 分钟。\n大火收汁，装盘撒芝麻。',
+          image: '',
+          images: [],
+          checkedIngredients: [],
+          createdAt: Date.now()
+        }
+      ],
+      menus: {
+        [(() => new Date().toISOString().slice(0, 10))()]: [
+          { id: 'demo-m1', name: '早餐', items: ['豆浆', '油条'] },
+          { id: 'demo-m2', name: '午餐', items: ['番茄炒蛋', '米饭'] },
+          { id: 'demo-m3', name: '晚餐', items: ['红烧肉'] }
+        ]
+      },
+      votes: [{ id: 'demo-v1', a: '红烧肉', b: '可乐鸡翅', aCount: 1, bCount: 0, createdAt: Date.now() }]
+    };
+
+    // Icons SVG
+    const icons = {
+      home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+      book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+      dice: '<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="8" cy="8" r="1.5"/><circle cx="16" cy="8" r="1.5"/><circle cx="8" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/><circle cx="12" cy="12" r="1.5"/>',
+      menu: '<path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/>',
+      vote: '<path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M9 12l2 2 4-4"/>',
+      plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+      settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+      search: '<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>',
+      edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+      trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+      clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+      tag: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l6.59 6.59a2 2 0 0 1 0 2.82z"/>',
+      chef: '<path d="M6 13v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7"/><path d="M12 3a4 4 0 0 0-4 4v6h8V7a4 4 0 0 0-4-4z"/>',
+      arrowLeft: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+      heart: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+      check: '<polyline points="20 6 9 17 4 12"/>',
+      utensils: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 2v20"/><path d="M17 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2"/>',
+      close: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+      camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>'
+    };
+
+    function icon(name, cls = '') {
+      return `<svg class="icon ${cls}" viewBox="0 0 24 24" aria-hidden="true">${icons[name] || ''}</svg>`;
+    }
+
+    // ================== GitHub API ==================
+    function parseRepo() {
+      const parts = state.repo.split('/');
+      state.owner = parts[0] || '';
+      state.repoName = parts.slice(1).join('/') || '';
+    }
+
+    async function ghApi(path, options = {}) {
+      const url = `https://api.github.com${path}`;
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': `token ${state.token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        ...options
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `HTTP ${res.status}`);
+      }
+      return res.status === 204 ? null : await res.json();
+    }
+
+    async function getFile(path) {
+      try {
+        const data = await ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`);
+        return { content: JSON.parse(decodeURIComponent(escape(atob(data.content)))), sha: data.sha };
+      } catch (e) {
+        if (e.message.includes('404')) return { content: null, sha: null };
+        throw e;
+      }
+    }
+
+    async function saveFile(path, content, sha) {
+      const body = {
+        message: `update ${path}`,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))))
+      };
+      if (sha) body.sha = sha;
+      return ghApi(`/repos/${state.owner}/${state.repoName}/contents/${path}`, {
+        method: 'PUT',
+        body: JSON.stringify(body)
+      });
+    }
+
+    async function loadData() {
+      parseRepo();
+      showLoading(true);
+      try {
+        const dishes = await getFile('data/dishes.json');
+        if (dishes.content === null) {
+          await saveFile('data/dishes.json', []);
+          state.dishes = [];
+        } else {
+          state.dishes = dishes.content;
+        }
+        const menus = await getFile('data/menus.json');
+        if (menus.content === null) {
+          await saveFile('data/menus.json', {});
+        } else {
+          state.menus = menus.content;
+        }
+        const votes = await getFile('data/votes.json');
+        if (votes.content === null) {
+          await saveFile('data/votes.json', []);
+        } else {
+          state.votes = votes.content;
+        }
+        renderApp();
+        toast('数据加载成功');
+      } catch (e) {
+        alert('加载失败：' + e.message + '\n请检查 Token 和仓库名是否正确。');
+        state.token = '';
+        state.repo = '';
+        localStorage.removeItem('gh_token');
+        localStorage.removeItem('gh_repo');
+        renderApp();
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function saveDishes() {
+      if (state.demo) return;
+      const { sha } = await getFile('data/dishes.json');
+      await saveFile('data/dishes.json', state.dishes, sha);
+    }
+    async function saveMenus() {
+      if (state.demo) return;
+      const { sha } = await getFile('data/menus.json');
+      await saveFile('data/menus.json', state.menus, sha);
+    }
+    async function saveVotes() {
+      if (state.demo) return;
+      const { sha } = await getFile('data/votes.json');
+      await saveFile('data/votes.json', state.votes, sha);
+    }
+
+    // ================== UI Helpers ==================
+    function $(sel) { return document.querySelector(sel); }
+    function esc(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+    function toast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      requestAnimationFrame(() => t.classList.add('show'));
+      setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 2200);
+    }
+    function showLoading(show) {
+      state.loading = show;
+      const app = $('#app');
+      if (show && app.innerHTML.trim() === '') {
+        app.innerHTML = '<div class="loading"><div class="spinner"></div><p>正在连接小厨房...</p></div>';
+      }
+    }
+    function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
+    function todayKey() { return new Date().toISOString().slice(0, 10); }
+    function greeting() {
+      const h = new Date().getHours();
+      if (h < 11) return 'Good morning';
+      if (h < 17) return 'Good afternoon';
+      return 'Good evening';
+    }
+
+    function openPrompt({ title, message, defaultValue = '', placeholder = '', onConfirm }) {
+      const modal = $('#modal');
+      modal.innerHTML = `
+        <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+          <div class="modal" style="max-width:420px;">
+            <div class="modal-header">
+              <h3 class="modal-title">${esc(title)}</h3>
+              <button class="close-btn" onclick="closeModal()">${icon('close')}</button>
+            </div>
+            ${message ? `<p class="help-text" style="margin-bottom:12px;color:var(--text-secondary);">${esc(message)}</p>` : ''}
+            <div class="form-group" style="margin-bottom:24px;">
+              <input type="text" id="prompt-input" placeholder="${esc(placeholder)}" value="${esc(defaultValue)}">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button class="btn btn-ghost btn-block" onclick="closeModal()">取消</button>
+              <button class="btn btn-primary btn-block" id="prompt-confirm">确定</button>
+            </div>
+          </div>
+        </div>
+      `;
+      $('#prompt-input').focus();
+      $('#prompt-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('#prompt-confirm').click(); });
+      $('#prompt-confirm').onclick = () => {
+        const val = $('#prompt-input').value.trim();
+        closeModal();
+        onConfirm(val);
+      };
+    }
+
+    // ================== Views ==================
+    function renderApp() {
+      if (!state.demo && (!state.token || !state.repo)) {
+        renderLogin();
+        return;
+      }
+      $('#app').innerHTML = `
+        <header class="header">
+          <div class="header-content">
+            <div class="logo">
+              <div class="logo-mark">${icon('utensils')}</div>
+              <span class="serif">二人食光</span>
+            </div>
+            <div class="header-actions">
+              <button class="icon-btn" onclick="showModal('addDish')" title="添加菜品">${icon('plus')}</button>
+              <button class="icon-btn" onclick="showSettings()" title="设置">${icon('settings')}</button>
+            </div>
+          </div>
+        </header>
+        <main class="main">
+          <div id="view-home" class="view ${state.currentView === 'home' ? 'active' : ''}"></div>
+          <div id="view-dishes" class="view ${state.currentView === 'dishes' ? 'active' : ''}"></div>
+          <div id="view-wheel" class="view ${state.currentView === 'wheel' ? 'active' : ''}"></div>
+          <div id="view-menu" class="view ${state.currentView === 'menu' ? 'active' : ''}"></div>
+          <div id="view-votes" class="view ${state.currentView === 'votes' ? 'active' : ''}"></div>
+        </main>
+        <nav class="bottom-nav">
+          <div class="bottom-nav-content">
+            <button class="nav-item ${state.currentView === 'home' ? 'active' : ''}" onclick="nav('home')">
+              ${icon('home')}
+              <span>首页</span>
+            </button>
+            <button class="nav-item ${state.currentView === 'dishes' ? 'active' : ''}" onclick="nav('dishes')">
+              ${icon('book')}
+              <span>菜谱</span>
+            </button>
+            <button class="nav-item ${state.currentView === 'wheel' ? 'active' : ''}" onclick="nav('wheel')">
+              ${icon('dice')}
+              <span>抽签</span>
+            </button>
+            <button class="nav-item ${state.currentView === 'menu' ? 'active' : ''}" onclick="nav('menu')">
+              ${icon('menu')}
+              <span>菜单</span>
+            </button>
+            <button class="nav-item ${state.currentView === 'votes' ? 'active' : ''}" onclick="nav('votes')">
+              ${icon('vote')}
+              <span>投票</span>
+            </button>
+          </div>
+        </nav>
+        <div id="modal"></div>
+      `;
+      renderHome();
+      renderDishes();
+      renderWheel();
+      renderMenu();
+      renderVotes();
+    }
+
+    function renderLogin() {
+      $('#app').innerHTML = `
+        <div class="login-wrap">
+          <div class="card login-card">
+            <div class="login-header">
+              <div class="login-mark">${icon('utensils', 'icon-xl')}</div>
+              <h1 class="login-title serif">二人食光</h1>
+              <p class="login-sub">我们的私房菜谱与互动点菜小站</p>
+            </div>
+            <div class="form-group">
+              <label>GitHub Token</label>
+              <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx" value="${esc(state.token)}">
+              <div class="help-text">用于读写仓库数据，仅保存在本地浏览器。</div>
+            </div>
+            <div class="form-group">
+              <label>仓库名</label>
+              <input type="text" id="repo" placeholder="用户名/仓库名" value="${esc(state.repo || 'zzkzzk/our-cookbook')}">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="doLogin()">进入小厨房</button>
+            <button class="btn btn-secondary btn-block" style="margin-top: 12px;" onclick="startDemo()">本地试用</button>
+            <p class="help-text" style="text-align: center; margin-top: 20px;">
+              还没有 Token？<a href="https://github.com/settings/tokens/new?scopes=repo&description=二人食光" target="_blank" style="color: var(--primary); font-weight: 600;">点击这里生成</a>（勾选 repo 权限）
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function doLogin() {
+      state.token = $('#token').value.trim();
+      state.repo = $('#repo').value.trim();
+      if (!state.token || !state.repo) return alert('请填写 Token 和仓库名');
+      localStorage.setItem('gh_token', state.token);
+      localStorage.setItem('gh_repo', state.repo);
+      loadData();
+    }
+
+    function showSettings() {
+      const modal = $('#modal');
+      modal.innerHTML = `
+        <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+          <div class="modal" style="max-width:440px;">
+            <div class="modal-header">
+              <h3 class="modal-title">设置</h3>
+              <button class="close-btn" onclick="closeModal()">${icon('close')}</button>
+            </div>
+            <div class="form-group">
+              <label>GitHub Token</label>
+              <input type="password" id="s-token" value="${esc(state.token)}">
+              <div class="help-text">可随时修改，仅保存在当前浏览器。</div>
+            </div>
+            <div class="form-group">
+              <label>仓库名</label>
+              <input type="text" id="s-repo" value="${esc(state.repo)}">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="saveSettings()" style="margin-bottom:12px;">保存设置</button>
+            <button class="btn btn-secondary btn-block" onclick="logout()">${state.demo ? '退出试用' : '退出登录'}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function saveSettings() {
+      const token = $('#s-token').value.trim();
+      const repo = $('#s-repo').value.trim();
+      if (!token || !repo) return alert('Token 和仓库名不能为空');
+      state.token = token;
+      state.repo = repo;
+      localStorage.setItem('gh_token', token);
+      localStorage.setItem('gh_repo', repo);
+      closeModal();
+      loadData();
+    }
+
+    function startDemo() {
+      state.demo = true;
+      state.dishes = JSON.parse(JSON.stringify(demoData.dishes));
+      state.menus = JSON.parse(JSON.stringify(demoData.menus));
+      state.votes = JSON.parse(JSON.stringify(demoData.votes));
+      state.currentView = 'home';
+      renderApp();
+      toast('已进入本地试用模式');
+    }
+
+    function logout() {
+      if (!confirm(state.demo ? '确定退出试用模式吗？' : '确定要退出登录吗？')) return;
+      state.token = '';
+      state.repo = '';
+      state.demo = false;
+      state.dishes = [];
+      state.menus = {};
+      state.votes = [];
+      localStorage.removeItem('gh_token');
+      localStorage.removeItem('gh_repo');
+      closeModal();
+      renderApp();
+    }
+
+    function nav(view) {
+      state.currentView = view;
+      renderApp();
+    }
+
+    // ================== Home ==================
+    function renderHome() {
+      const today = todayKey();
+      const meals = state.menus[today] || [];
+      const total = state.dishes.length;
+      const mealCount = meals.reduce((sum, m) => sum + (m.items || []).length, 0);
+      $('#view-home').innerHTML = `
+        <div class="hero">
+          <div class="hero-content">
+            <div class="hero-greeting">${greeting()}</div>
+            <div class="hero-title serif">今天想吃点什么？</div>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <div class="hero-stat-num">${total}</div>
+                <div class="hero-stat-label">收录菜品</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">${mealCount}</div>
+                <div class="hero-stat-label">今日安排</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-grid">
+          <div class="quick-card" onclick="nav('wheel')">
+            <div class="quick-icon">${icon('dice', 'icon-lg')}</div>
+            <div class="quick-title">今天吃什么</div>
+            <div class="quick-desc">让命运决定晚餐</div>
+          </div>
+          <div class="quick-card" onclick="nav('menu')">
+            <div class="quick-icon">${icon('menu', 'icon-lg')}</div>
+            <div class="quick-title">今日菜单</div>
+            <div class="quick-desc">安排每一餐</div>
+          </div>
+          <div class="quick-card" onclick="nav('dishes')">
+            <div class="quick-icon">${icon('book', 'icon-lg')}</div>
+            <div class="quick-title">浏览菜谱</div>
+            <div class="quick-desc">查看所有私房菜</div>
+          </div>
+          <div class="quick-card" onclick="showModal('addVote')">
+            <div class="quick-icon">${icon('vote', 'icon-lg')}</div>
+            <div class="quick-title">发起投票</div>
+            <div class="quick-desc">二选一一起决定</div>
+          </div>
+        </div>
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <div class="section-line"></div>
+            <div class="section-title">今日菜单</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="nav('menu')">查看全部</button>
+        </div>
+        <div class="card">
+          ${meals.length === 0 || mealCount === 0 ?
+            '<p class="help-text" style="margin: 0;">还没有安排今天的菜单，去「菜单」页面添加吧。</p>' :
+            `<div style="display: grid; gap: 16px;">
+              ${meals.map(m => renderMealPreview(m.name, m.items)).join('')}
+            </div>`
+          }
+        </div>
+      `;
+    }
+
+    function renderMealPreview(name, items) {
+      if (!items || items.length === 0) return '';
+      return `
+        <div>
+          <div class="caption" style="color: var(--text-tertiary); margin-bottom: 6px;">${esc(name)}</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            ${items.map(d => `<span class="dish-tag">${esc(d)}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ================== Dishes ==================
+    function renderDishes() {
+      $('#view-dishes').innerHTML = `
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <div class="section-line"></div>
+            <div class="section-title">私房菜谱</div>
+          </div>
+          <span class="help-text">${state.dishes.length} 道菜</span>
+        </div>
+        <div class="search-box">
+          ${icon('search')}
+          <input type="text" id="dish-search" placeholder="搜索菜名、食材、标签..." oninput="filterDishes()">
+        </div>
+        <div id="dish-list"></div>
+      `;
+      filterDishes();
+    }
+
+    function dishImage(d) {
+      return (d.images && d.images[0]) || d.image || '';
+    }
+
+    function filterDishes() {
+      const kw = ($('#dish-search')?.value || '').toLowerCase();
+      const list = state.dishes.filter(d =>
+        d.name.toLowerCase().includes(kw) ||
+        (d.tags || []).some(t => t.toLowerCase().includes(kw)) ||
+        (d.ingredients || '').toLowerCase().includes(kw)
+      );
+      const container = $('#dish-list');
+      if (!container) return;
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${icon('utensils', 'icon-xl')}</div>
+            <p>还没有菜品</p>
+            <p class="help-text">点击右上角 + 添加第一道私房菜</p>
+          </div>
+        `;
+        return;
+      }
+      container.innerHTML = `
+        <div class="dish-grid">
+          ${list.map(d => `
+            <div class="dish-card" onclick="showDishDetail('${d.id}')">
+              <div class="dish-img-wrap">
+                ${dishImage(d) ? `<img class="dish-img" src="${dishImage(d)}" alt="${esc(d.name)}">` :
+                  `<div class="dish-img-placeholder">${icon('utensils', 'icon-xl')}</div>`
+                }
+              </div>
+              <div class="dish-info">
+                <div class="dish-name">${esc(d.name)}</div>
+                <div class="dish-meta">${esc(d.category || '未分类')} · ${d.time || '?'}</div>
+                ${d.tags && d.tags.length ? `<div class="dish-tags">${d.tags.slice(0, 2).map(t => `<span class="dish-tag">${esc(t)}</span>`).join('')}</div>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function showDishDetail(id, imgIdx = 0) {
+      const dish = state.dishes.find(d => d.id === id);
+      if (!dish) return;
+      const images = dish.images || (dish.image ? [dish.image] : []);
+      const mainImg = images[imgIdx] || '';
+      state.currentView = 'dishDetail';
+      $('#app').innerHTML = `
+        <header class="header">
+          <div class="header-content">
+            <div class="logo" style="cursor:pointer;" onclick="nav('dishes')">
+              <div class="icon-btn" style="margin-right: 6px;">${icon('arrowLeft')}</div>
+              <span class="serif">返回菜谱</span>
+            </div>
+            <div class="header-actions">
+              <button class="icon-btn" onclick="editDish('${dish.id}')">${icon('edit')}</button>
+              <button class="icon-btn" onclick="deleteDish('${dish.id}')">${icon('trash')}</button>
+            </div>
+          </div>
+        </header>
+        <main class="main" style="padding-bottom: 40px;">
+          <div class="detail-img-wrap">
+            ${mainImg ? `<img class="detail-img" src="${mainImg}" alt="${esc(dish.name)}">` :
+              `<div class="detail-img-placeholder">${icon('utensils', 'icon-xl')}</div>`
+            }
+            ${images.length > 1 ? `<div class="detail-gallery">${images.map((img, i) => `<img class="${i === imgIdx ? 'active' : ''}" src="${img}" onclick="showDishDetail('${dish.id}', ${i})">`).join('')}</div>` : ''}
+          </div>
+          <div class="detail-header">
+            <h1 class="detail-title serif">${esc(dish.name)}</h1>
+            <div class="detail-tags">
+              <span class="detail-tag">${esc(dish.category || '未分类')}</span>
+              <span class="detail-tag">${icon('clock', '')} ${dish.time || '?'}</span>
+              ${(dish.tags || []).map(t => `<span class="detail-tag">${esc(t)}</span>`).join('')}
+            </div>
+          </div>
+          <div class="card info-card">
+            <div class="info-card-title">
+              食材清单
+              <span class="line"></span>
+            </div>
+            ${(dish.ingredients || '').split(/[,，\n]/).filter(Boolean).map((ing, i) => `
+              <label class="ingredient-item ${(dish.checkedIngredients || []).includes(i) ? 'checked' : ''}">
+                <input type="checkbox" ${(dish.checkedIngredients || []).includes(i) ? 'checked' : ''} onchange="toggleIngredient('${dish.id}', ${i})">
+                <span>${esc(ing.trim())}</span>
+              </label>
+            `).join('')}
+          </div>
+          <div class="card info-card">
+            <div class="info-card-title">
+              制作步骤
+              <span class="line"></span>
+            </div>
+            ${(dish.steps || '').split(/\n/).filter(Boolean).map((step, i) => `
+              <div class="step-item">
+                <div class="step-num">${i + 1}</div>
+                <div class="step-text">${esc(step.trim())}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="detail-actions">
+            <button class="btn btn-secondary btn-block" onclick="addToMenuPrompt('${dish.id}')">加入今日菜单</button>
+            <button class="btn btn-primary btn-block" onclick="addToWishlist('${dish.id}')">${icon('heart')} 想吃</button>
+          </div>
+        </main>
+      `;
+    }
+
+    function toggleIngredient(id, idx) {
+      const dish = state.dishes.find(d => d.id === id);
+      if (!dish) return;
+      dish.checkedIngredients = dish.checkedIngredients || [];
+      if (dish.checkedIngredients.includes(idx)) {
+        dish.checkedIngredients = dish.checkedIngredients.filter(i => i !== idx);
+      } else {
+        dish.checkedIngredients.push(idx);
+      }
+      showDishDetail(id);
+      saveDishes().then(() => toast('已标记')).catch(e => alert('保存失败：' + e.message));
+    }
+
+    function deleteDish(id) {
+      if (!confirm('确定删除这道菜吗？')) return;
+      state.dishes = state.dishes.filter(d => d.id !== id);
+      saveDishes().then(() => { toast('已删除'); nav('dishes'); }).catch(e => alert('删除失败：' + e.message));
+    }
+
+    // ================== Add/Edit Dish Modal ==================
+    function showModal(type) {
+      const modal = $('#modal');
+      if (type === 'addDish') {
+        pendingImages = [];
+        modal.innerHTML = `
+          <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+            <div class="modal">
+              <div class="modal-header">
+                <h3 class="modal-title">添加新菜品</h3>
+                <button class="close-btn" onclick="closeModal()">${icon('close')}</button>
+              </div>
+              <div class="form-group">
+                <label>菜品名称 *</label>
+                <input type="text" id="d-name" placeholder="例如：红烧肉">
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group">
+                  <label>分类</label>
+                  <select id="d-category">
+                    <option>荤菜</option><option>素菜</option><option>汤羹</option>
+                    <option>主食</option><option>甜品</option><option>饮品</option><option>其他</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>预计时间</label>
+                  <input type="text" id="d-time" placeholder="例如：30 分钟">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>标签（用空格分隔）</label>
+                <input type="text" id="d-tags" placeholder="例如：下饭 快手 家常菜">
+              </div>
+              <div class="form-group">
+                <label>食材清单（用逗号或换行分隔）</label>
+                <textarea id="d-ingredients" placeholder="五花肉 500g&#10;生姜 3片&#10;冰糖 20g"></textarea>
+              </div>
+              <div class="form-group">
+                <label>制作步骤（每行一步）</label>
+                <textarea id="d-steps" placeholder="1. 五花肉切块焯水&#10;2. 热锅下油炒糖色&#10;3. ..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>成品图片</label>
+                <div class="image-upload">
+                  <label class="upload-trigger" for="d-image">${icon('camera', '')} 点击上传图片</label>
+                  <div class="upload-hint">支持多张，首张为封面，会自动压缩</div>
+                  <input type="file" id="d-image" accept="image/*" multiple onchange="previewImages(this)">
+                </div>
+                <div class="thumb-list" id="d-thumbs"></div>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="saveDish()">保存菜品</button>
+            </div>
+          </div>
+        `;
+      } else if (type === 'addVote') {
+        modal.innerHTML = `
+          <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+            <div class="modal" style="max-width:420px;">
+              <div class="modal-header">
+                <h3 class="modal-title">发起投票</h3>
+                <button class="close-btn" onclick="closeModal()">${icon('close')}</button>
+              </div>
+              <div class="form-group">
+                <label>选项 A</label>
+                <input type="text" id="v-a" placeholder="例如：红烧肉">
+              </div>
+              <div class="form-group">
+                <label>选项 B</label>
+                <input type="text" id="v-b" placeholder="例如：可乐鸡翅">
+              </div>
+              <button class="btn btn-primary btn-block" onclick="saveVote()">发起投票</button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function closeModal() { $('#modal').innerHTML = ''; }
+
+    let pendingImages = [];
+
+    async function previewImages(input) {
+      const files = Array.from(input.files || []);
+      if (!files.length) return;
+      for (const file of files) {
+        try {
+          const dataUrl = await resizeImage(file);
+          pendingImages.push(dataUrl);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      renderThumbs();
+    }
+
+    function renderThumbs() {
+      const box = $('#d-thumbs');
+      if (!box) return;
+      box.innerHTML = pendingImages.map((src, i) => `
+        <div class="thumb">
+          <img src="${src}" alt="">
+          <button class="remove" onclick="removePendingImage(${i})" title="移除">${icon('close')}</button>
+        </div>
+      `).join('');
+    }
+
+    function removePendingImage(i) {
+      pendingImages.splice(i, 1);
+      renderThumbs();
+    }
+
+    function resizeImage(file, maxWidth = 1200, quality = 0.85) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = e => { img.src = e.target.result; };
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const scale = Math.min(1, maxWidth / Math.max(img.width, img.height));
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function saveDish() {
+      const name = $('#d-name').value.trim();
+      if (!name) return alert('请填写菜品名称');
+      const dish = {
+        id: genId(),
+        name,
+        category: $('#d-category').value,
+        time: $('#d-time').value.trim(),
+        tags: $('#d-tags').value.trim().split(/\s+/).filter(Boolean),
+        ingredients: $('#d-ingredients').value.trim(),
+        steps: $('#d-steps').value.trim(),
+        image: pendingImages[0] || '',
+        images: pendingImages,
+        checkedIngredients: [],
+        createdAt: Date.now()
+      };
+      state.dishes.unshift(dish);
+      pendingImages = [];
+      closeModal();
+      saveDishes().then(() => {
+        toast('菜品已保存');
+        if (state.currentView === 'dishes') renderDishes();
+        else nav('dishes');
+      }).catch(e => alert('保存失败：' + e.message));
+    }
+
+    function editDish(id) {
+      const dish = state.dishes.find(d => d.id === id);
+      if (!dish) return;
+      showModal('addDish');
+      setTimeout(() => {
+        $('#d-name').value = dish.name;
+        $('#d-category').value = dish.category || '其他';
+        $('#d-time').value = dish.time || '';
+        $('#d-tags').value = (dish.tags || []).join(' ');
+        $('#d-ingredients').value = dish.ingredients || '';
+        $('#d-steps').value = dish.steps || '';
+        pendingImages = dish.images || (dish.image ? [dish.image] : []);
+        renderThumbs();
+        $('.modal-title').textContent = '编辑菜品';
+        $('button[onclick="saveDish()"]').onclick = () => updateDish(id);
+      }, 50);
+    }
+
+    function updateDish(id) {
+      const dish = state.dishes.find(d => d.id === id);
+      dish.name = $('#d-name').value.trim();
+      dish.category = $('#d-category').value;
+      dish.time = $('#d-time').value.trim();
+      dish.tags = $('#d-tags').value.trim().split(/\s+/).filter(Boolean);
+      dish.ingredients = $('#d-ingredients').value.trim();
+      dish.steps = $('#d-steps').value.trim();
+      dish.images = pendingImages;
+      dish.image = pendingImages[0] || '';
+      pendingImages = [];
+      closeModal();
+      saveDishes().then(() => {
+        toast('修改已保存');
+        showDishDetail(id);
+      }).catch(e => alert('保存失败：' + e.message));
+    }
+
+    // ================== Wheel ==================
+    function renderWheel() {
+      const dishes = state.dishes.length > 1 ? state.dishes : [{ name: '红烧肉' }, { name: '可乐鸡翅' }, { name: '番茄炒蛋' }, { name: '酸菜鱼' }];
+      const first = dishes[0];
+      $('#view-wheel').innerHTML = `
+        <div class="picker-wrap">
+          <div class="picker-circle" id="picker-box">
+            <div class="picker-content">
+              <div class="picker-emoji" id="picker-emoji">🍽️</div>
+              <div class="picker-label">Tonight's Pick</div>
+              <div class="picker-dish serif" id="picker-dish">${esc(first.name)}</div>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" id="spin-btn" onclick="spinWheel()" style="max-width: 280px; margin: 0 auto;">开始抽签</button>
+          <div class="picker-result" id="wheel-result"></div>
+        </div>
+      `;
+    }
+
+    let wheelSpinning = false;
+    function spinWheel() {
+      if (wheelSpinning) return;
+      const dishes = state.dishes.length > 1 ? state.dishes : [{ name: '红烧肉' }, { name: '可乐鸡翅' }, { name: '番茄炒蛋' }, { name: '酸菜鱼' }];
+      if (dishes.length < 2) return alert('请至少添加 2 道菜品');
+      wheelSpinning = true;
+      const emojiList = ['🍽️', '🥘', '🍜', '🍲', '🥗', '🍛', '🍝', '🥟'];
+      const pickerDish = $('#picker-dish');
+      const pickerEmoji = $('#picker-emoji');
+      $('#wheel-result').innerHTML = '<p class="help-text">正在纠结中...</p>';
+      let count = 0;
+      const total = 20;
+      const interval = setInterval(() => {
+        const idx = count % dishes.length;
+        pickerDish.textContent = dishes[idx].name;
+        pickerEmoji.textContent = emojiList[count % emojiList.length];
+        count++;
+        if (count >= total) {
+          clearInterval(interval);
+          const winnerIdx = Math.floor(Math.random() * dishes.length);
+          pickerDish.textContent = dishes[winnerIdx].name;
+          pickerEmoji.textContent = '🎉';
+          wheelSpinning = false;
+          const winnerId = dishes[winnerIdx].id || '';
+          $('#wheel-result').innerHTML = `
+            <p class="help-text" style="margin-bottom: 8px;">今晚就吃</p>
+            <div class="title-lg serif" style="color: var(--primary); margin-bottom: 16px;">${esc(dishes[winnerIdx].name)}</div>
+            <button class="btn btn-secondary btn-sm" onclick="addToMenuPrompt('${winnerId}')">加入菜单</button>
+          `;
+        }
+      }, 100);
+    }
+
+    // ================== Menu ==================
+    function renderMenu() {
+      const today = todayKey();
+      const meals = state.menus[today] || [];
+      $('#view-menu').innerHTML = `
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <div class="section-line"></div>
+            <div class="section-title">${today} 今日菜单</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="addMeal()">${icon('plus')} 新建一餐</button>
+        </div>
+        ${meals.length === 0 ?
+          `<div class="empty-state">
+            <div class="empty-icon">${icon('menu', 'icon-xl')}</div>
+            <p>还没有安排今天的菜单</p>
+            <p class="help-text">点击「新建一餐」开始规划</p>
+          </div>` :
+          meals.map(m => renderMealCard(m)).join('')
+        }
+      `;
+    }
+
+    function renderMealCard(meal) {
+      const items = meal.items || [];
+      return `
+        <div class="card meal-card">
+          <div class="meal-header">
+            <div class="meal-title"><span class="meal-dot"></span>${esc(meal.name)}</div>
+            <div class="meal-actions">
+              <button class="btn btn-ghost btn-xs" onclick="renameMeal('${meal.id}')">重命名</button>
+              <button class="btn btn-secondary btn-xs" onclick="addToMenuPrompt('','${meal.id}')">${icon('plus')} 添加</button>
+              <button class="btn btn-ghost btn-xs" onclick="deleteMeal('${meal.id}')">${icon('trash')}</button>
+            </div>
+          </div>
+          ${items.length === 0 ? '<p class="help-text" style="margin: 0;">未安排</p>' : `
+            <div class="menu-items">
+              ${items.map(d => `
+                <div class="menu-chip">
+                  <span>${esc(d)}</span>
+                  <button onclick="removeFromMenu('${meal.id}', '${esc(d).replace(/'/g, "\\'")}')">${icon('close')}</button>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function addMeal() {
+      openPrompt({
+        title: '新建一餐',
+        placeholder: '例如：早餐、晚餐、夜宵…',
+        defaultValue: '晚餐',
+        onConfirm: name => {
+          if (!name) return;
+          const today = todayKey();
+          state.menus[today] = state.menus[today] || [];
+          state.menus[today].push({ id: genId(), name, items: [] });
+          saveMenus().then(() => { toast('已新建「' + name + '」'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
+        }
+      });
+    }
+
+    function renameMeal(mealId) {
+      const today = todayKey();
+      const meals = state.menus[today] || [];
+      const meal = meals.find(m => m.id === mealId);
+      if (!meal) return;
+      openPrompt({
+        title: '重命名',
+        defaultValue: meal.name,
+        onConfirm: name => {
+          if (!name) return;
+          meal.name = name;
+          saveMenus().then(() => { toast('已重命名'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
+        }
+      });
+    }
+
+    function deleteMeal(mealId) {
+      if (!confirm('确定删除这一餐？')) return;
+      const today = todayKey();
+      state.menus[today] = (state.menus[today] || []).filter(m => m.id !== mealId);
+      saveMenus().then(() => { toast('已删除'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
+    }
+
+    function addToMenuPrompt(dishId, mealId) {
+      const dish = state.dishes.find(d => d.id === dishId);
+      const name = dish ? dish.name : '';
+      const today = todayKey();
+      state.menus[today] = state.menus[today] || [];
+      const meals = state.menus[today];
+
+      const addToMeal = mealName => {
+        if (!mealName) return;
+        let meal = meals.find(m => m.id === mealId);
+        if (!meal) {
+          meal = meals.find(m => m.name === mealName);
+          if (!meal) {
+            meal = { id: genId(), name: mealName, items: [] };
+            meals.push(meal);
+          }
+        }
+        const addName = name || mealName;
+        if (!meal.items.includes(addName)) meal.items.push(addName);
+        saveMenus().then(() => { toast('已加入「' + meal.name + '」'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
+      };
+
+      if (mealId) {
+        const meal = meals.find(m => m.id === mealId);
+        if (!name) {
+          openPrompt({ title: '添加菜品', placeholder: '菜名', onConfirm: val => { if (val) addToMeal(meal.name); } });
+        } else {
+          addToMeal(meal.name);
+        }
+      } else {
+        const existingNames = meals.map(m => m.name).join(' / ') || '暂无';
+        if (name) {
+          openPrompt({
+            title: '加入哪一餐',
+            message: '可输入已有名称或新名称。当前：' + existingNames,
+            placeholder: '例如：晚餐',
+            defaultValue: '晚餐',
+            onConfirm: addToMeal
+          });
+        } else {
+          openPrompt({ title: '菜名', placeholder: '例如：红烧肉', onConfirm: val => {
+            if (!val) return;
+            dishId = '';
+            name = val;
+            openPrompt({ title: '加入哪一餐', message: '当前：' + existingNames, placeholder: '例如：晚餐', defaultValue: '晚餐', onConfirm: addToMeal });
+          }});
+        }
+      }
+    }
+
+    function removeFromMenu(mealId, name) {
+      const today = todayKey();
+      const meals = state.menus[today] || [];
+      const meal = meals.find(m => m.id === mealId);
+      if (!meal) return;
+      meal.items = meal.items.filter(n => n !== name);
+      saveMenus().then(() => { toast('已移除'); renderMenu(); }).catch(e => alert('保存失败：' + e.message));
+    }
+
+    function addToWishlist(id) {
+      const dish = state.dishes.find(d => d.id === id);
+      if (!dish) return;
+      const list = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      if (!list.includes(dish.name)) {
+        list.push(dish.name);
+        localStorage.setItem('wishlist', JSON.stringify(list));
+      }
+      toast(`「${dish.name}」已加入想吃心愿单`);
+    }
+
+    // ================== Votes ==================
+    function renderVotes() {
+      $('#view-votes').innerHTML = `
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <div class="section-line"></div>
+            <div class="section-title">二选一投票</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="showModal('addVote')">${icon('plus')} 发起</button>
+        </div>
+        ${state.votes.length === 0 ?
+          `<div class="empty-state">
+            <div class="empty-icon">${icon('vote', 'icon-xl')}</div>
+            <p>还没有投票</p>
+            <p class="help-text">发起一个让两人一起决定</p>
+          </div>` :
+          state.votes.slice().reverse().map(v => `
+            <div class="card vote-card">
+              <div class="vote-header">${esc(v.a)} <span style="color: var(--text-tertiary); font-weight: 400;">vs</span> ${esc(v.b)}</div>
+              <div class="vote-options">
+                <div class="vote-option" onclick="doVote('${v.id}', 'a')">
+                  <div class="vote-option-name">${esc(v.a)}</div>
+                  <div class="vote-option-count">${v.aCount || 0} 票</div>
+                </div>
+                <div class="vote-option" onclick="doVote('${v.id}', 'b')">
+                  <div class="vote-option-name">${esc(v.b)}</div>
+                  <div class="vote-option-count">${v.bCount || 0} 票</div>
+                </div>
+              </div>
+              <div class="vote-bar-wrap">
+                <div class="vote-bar" style="width: ${votePercent(v)}%;"></div>
+              </div>
+              <button class="btn btn-ghost btn-sm" style="margin-top: 12px;" onclick="deleteVote('${v.id}')">删除投票</button>
+            </div>
+          `).join('')
+        }
+      `;
+    }
+
+    function votePercent(v) {
+      const total = (v.aCount || 0) + (v.bCount || 0);
+      if (total === 0) return 50;
+      return ((v.aCount || 0) / total * 100);
+    }
+
+    function saveVote() {
+      const a = $('#v-a').value.trim();
+      const b = $('#v-b').value.trim();
+      if (!a || !b) return alert('请填写两个选项');
+      state.votes.push({ id: genId(), a, b, aCount: 0, bCount: 0, createdAt: Date.now() });
+      closeModal();
+      saveVotes().then(() => { toast('投票已发起'); renderVotes(); }).catch(e => alert('保存失败：' + e.message));
+    }
+
+    function doVote(id, option) {
+      const v = state.votes.find(x => x.id === id);
+      if (!v) return;
+      v[option + 'Count'] = (v[option + 'Count'] || 0) + 1;
+      saveVotes().then(() => { toast('投票成功'); renderVotes(); }).catch(e => alert('保存失败：' + e.message));
+    }
+
+    function deleteVote(id) {
+      if (!confirm('删除这个投票？')) return;
+      state.votes = state.votes.filter(v => v.id !== id);
+      saveVotes().then(() => { toast('已删除'); renderVotes(); }).catch(e => alert('保存失败：' + e.message));
+    }
+
+    // ================== Init ==================
+    if (state.token && state.repo) {
+      loadData();
+    } else {
+      renderApp();
+    }
+  </script>
+</body>
+</html>
